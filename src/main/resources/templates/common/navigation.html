@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>导航栏</title>
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+	<div th:fragment="bar" class="navbar navbar-default" id="navbar">
+		<div class="navbar-container" id="navbar-container">
+			<div class="navbar-header pull-left">
+				<a href="#" class="navbar-brand">
+					<small><i class="fa fa-paypal"></i> <span th:if="${system} != null" th:text="${system.webName}"></span>总管理后台</small>
+				</a>
+				<!-- /.brand -->
+			</div>
+			<!-- /.navbar-header -->
+
+			<div class="navbar-header pull-right" role="navigation">
+				<form action="logout" method="post" id="logout">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+					<ul class="nav ace-nav">
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">
+								<img class="nav-user-photo" src="assets/avatars/user.jpg" alt="Jason's Photo" />
+								<span class="user-info"> <small>欢迎光临,</small> <span th:text="${#authentication.principal.userName}"></span></span> <i class="fa fa-caret-down"></i>
+							</a>
+	
+							<ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+								<li th:if="${#authorization.expression('hasAuthority(''system.html'')')}"><a href="system.html"> <i class="fa fa-gear"></i> 系统设置</a></li>
+	
+								<li class="divider"></li>
+								
+								<li><a href="javascript:;" onclick="document.getElementById('logout').submit()"> <i class="fa fa-power-off"></i> 退出</a></li>
+							</ul>
+						</li>
+					</ul>
+				</form>
+				<!-- /.ace-nav -->
+			</div>
+			<!-- /.navbar-header -->
+		</div>
+		<!-- /.container -->
+	</div>
+</body>
+</html>

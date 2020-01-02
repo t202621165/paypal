@@ -1,0 +1,60 @@
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML5
+  datasource:
+    url: jdbc:mysql://114.55.94.50:8889/paypal
+    username: root
+    password: iwanol0928****
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      pool-name: hikari-bee # 连接池名称
+      minimum-idle: 1 #池中维护的最小空闲连接数
+      idle-timeout: 180000 #空闲连接存活最大时间，默认600000（10分钟）
+      maximum-pool-size: 10 #连接池最大连接数，默认是10
+      auto-commit: true
+      connection-timeout: 30000 # 数据库连接超时时间,默认30秒，即30000
+      max-lifetime: 180000 # 此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      connection-test-query: select 1
+  jpa:
+    database: MYSQL
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+  mail:
+    host: smtp.mxhichina.com
+    username: service@iwanol.com
+    password: iwanol888***-
+    protocol: smtp
+    properties:
+       mail:  
+        smtp:  
+          auth: true
+          socketFactory:
+                  class: javax.net.ssl.SSLSocketFactory
+                  port: 465
+  cache:
+    type: jcache
+    jcache:
+      config: classpath:/ehcache.xml
+server:
+  port: 80
+  tomcat:
+    max-threads: 1000
+    
+#自定义属性
+com:
+  paypal:
+    mark: iwanol #系统设置唯一标识、系统商户帐号、系统默认角色标识(用户系统最高权限)、系统默认用户名
+    name: 爱玩在线 #网站名称
+    email: 619650@qq.com #系统商户绑定邮箱、系统默认用户登录密码 
+    domain: 
+      web: http://192.168.0.103:8082 #网站域名
+      pay: http://localhost:8083 #接口域名

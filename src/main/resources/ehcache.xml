@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xmlns='http://www.ehcache.org/v3'
+    xsi:schemaLocation="http://www.ehcache.org/v3 
+    http://www.ehcache.org/schema/ehcache-core.xsd">
+    <persistence directory="F:\ehcache\paypal"/>
+    <!-- 权限缓存 -->
+    <cache alias="permission">
+        <key-type>java.lang.Object</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <tti unit="days">30</tti>
+        </expiry>
+        <resources>
+            <disk unit="MB" persistent="true">10</disk>
+        </resources>
+    </cache>
+    
+    <cache alias="systemSet">
+        <key-type>java.lang.Object</key-type>
+        <value-type>java.lang.Object</value-type>
+        <expiry>
+            <tti unit="days">30</tti>
+        </expiry>
+        <resources>
+            <disk unit="MB" persistent="true">10</disk>
+        </resources>
+    </cache>
+    
+</config>

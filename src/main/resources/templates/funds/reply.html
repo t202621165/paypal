@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('批付记录')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('资金管理','批付记录')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4>结算查询</h4>
+									<span class="widget-toolbar">
+										<a href="javascript:;">
+											<i class="fa fa-refresh"></i>
+										</a>
+
+										<a href="javascript:;" data-action="collapse">
+											<i class="fa fa-chevron-up"></i>
+										</a>
+									</span>
+								</div>
+								<div class="widget-body">
+									<div class="widget-main">
+										<form id="searchForm">
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">
+															<i class="fa fa-calendar bigger-110"></i>
+														</span>
+														<input class="form-control date-range-picker" type="text" id="id-date-range-picker-1">
+													</div>
+												</div>
+												<input type="hidden" name="startDate">
+												<input type="hidden" name="endDate">
+												<div class="col-xs-4" th:if="${users} != null">
+													<div class="input-group">
+														<span class="input-group-addon">管理员</span>
+														<select name="userId" class="form-control" id="form-field-select-1" style="height: 34px;">
+															<option value="">--请选择--</option>
+															<option th:each="item:${users}" th:value="${item.id}" th:text="${item.userName}"></option>
+														</select>
+														<span class="input-group-btn">
+															<button type="button" class="btn btn-primary btn-sm btn-query">查询</button>
+														</span>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="tabbable">
+								<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+									<li data-tab-key class="active first" data-rel="tooltip" data-placement="bottom" title="查看全部批付记录">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">全部</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="true" data-rel="tooltip" data-placement="bottom" title="查看已付款记录">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">已付款</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="false" data-rel="tooltip" data-placement="bottom" title="查看未付款记录">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">未付款</a>
+									</li>
+								</ul>
+							
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div id="pay_reply" class="tab-pane in active">
+										<table id="sample-table"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center"><i class="fa fa-hashtag"></i></th>
+													<th class="center">批付时间</th>
+													<th class="center">批付号</th>
+													<th class="center">批付笔数</th>
+													<th class="center">总金额</th>
+													<th class="center">批付人</th>
+													<th class="center">状态</th>
+													<th class="center">操作</th>
+												</tr>
+											</thead>
+
+										</table>
+									</div>
+									
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<div id="modal-table" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header no-padding">
+					<div class="table-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+							<span class="white">&times;</span>
+						</button>
+						批付详情
+					</div>
+				</div>
+
+				<div class="modal-body no-padding">
+					<table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+						<thead>
+							<tr>
+								<th>收款人</th>
+								<th>收款银行</th>
+								<th>收款账号</th>
+								<th>金额</th>
+								<th>状态</th>
+							</tr>
+						</thead>
+						<tbody id="reply-details"></tbody>
+					</table>
+				</div>
+
+				<div class="modal-footer no-margin-top">
+					<ul class="pagination pull-right no-margin">
+						<li class="prev disabled">
+							<a href="#">
+								<i class="fa fa-angle-double-left"></i>
+							</a>
+						</li>
+
+						<li class="active">
+							<a href="#">1</a>
+						</li>
+
+						<li>
+							<a href="#">2</a>
+						</li>
+
+						<li>
+							<a href="#">3</a>
+						</li>
+
+						<li class="next">
+							<a href="#">
+								<i class="fa fa-angle-double-right"></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- PAGE CONTENT ENDS -->
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- date range picker scripts -->
+	<div th:replace="common/common_js :: daterangepicker"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script class="invisible" type="text/javascript">
+		var options = {
+			rangePicker: true,
+			element: "#sample-table",
+			ajax: {
+				url: "funds/reply"
+			},
+			order: [1, "desc"],
+			columns: [
+				{  
+					"data" : null,
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full, meta) {
+						return meta.row + 1 + meta.settings._iDisplayStart;
+					}
+				},
+				{  
+					"data" : "replyDate",
+					"class" : "center hidden-1080",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						var arr = data.split(" ");
+						return "<p class='tab-p-heard'>"+arr[0]+"</p><p class='tab-p-foot'>"+arr[1]+"</p>";
+					}
+				},
+				{  
+					"data" : "serialNumber",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return $.stringEllipsis(data,5,5);
+					}
+				},
+				{  
+					"data" : "counts",
+					"class" : "center",
+					"orderable": false
+				},
+				{  
+					"data" : "amount",
+					"class" : "center green",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return "<i class='fa fa-rmb'></i> "+ $.toThousands(data);
+					}
+				},
+				{  
+					"data" : "userName",
+					"class" : "center hidden-980",
+					"orderable": false
+				},
+				{  
+					"data" : "state",
+					"class" : "center hidden-680",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						var result = "";
+						if (data) {
+							result = '<span class="label label-success arrowed-in-right arrowed">已付款</span>';
+						}else {
+							result = '<span class="label label-grey arrowed-in-right arrowed">待付款</span>';
+						}
+						return result;
+					}
+				}
+            ],
+            rowCallbacks: [],
+            drawCallbacks: [
+            	{render: function (jsonData){
+            		if (typeof jsonData.sumData != "undefined"){
+						var sumData = jsonData.sumData;
+						var _html = '<div class="message-infobar" id="id-message-infobar">' + 
+										'<b>总计：</b>' + 
+										'<b class="blue">金额_：</b>' + 
+										'<b class="green">'+ $.toThousands(sumData[0].totalAmount) +'</b>&nbsp;' + 
+									'</div>';
+						$(".total-record").empty().append(_html);
+					}
+            	}}
+            ]
+		};
+		var pay = "",expor = "",delet = "";
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''reply_details.html'')')}" class="invisible" type="text/javascript">
+		options.columns[2] = {  
+					"data" : "serialNumber",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return '<a class="frame" href="javascript:;" data-rel="tooltip" ' + 
+								'data-placement="bottom" title="点击查看批付详情">'+ $.stringEllipsis(data,5,5) +'</a>';
+					}
+				};
+		options.rowCallbacks.push({render: function (row, data){
+            		$('td:eq(2)', row).find(".frame").off().on("click", function (){
+						layer.open({
+							type: 2,
+							title: "批付详情("+ data.serialNumber +")",
+							shade: 0.6,
+							skin: "layui-layer-7 layui-layer-rim",
+							maxmin: true,
+							content: '/reply_details_'+data.id+'.html'
+						});
+					});
+            	}});
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''funds/reply_pay'')')}" class="invisible" type="text/javascript">
+		pay = '<a href="javasctipt:;" class="green reply-pay" data-rel="popover-notitle" data-placement="bottom" data-trigger="hover" data-placement="bottom" data-content="确定付款"><i class="fa fa-credit-card-alt bigger-130"></i></a>';
+		
+		options.rowCallbacks.push({render: function (row, data){
+            		$('td:eq(7)', row).find(".reply-pay").off().on("click", function (){
+            			var _this = $(this);
+            			layer.confirm('\u662F\u5426\u786E\u5B9A\u4ed8\u6b3e\uFF1F', {
+							title: "<li class='fa fa-question-circle-o bigger-120 red'></li> \u63D0\u793A",
+							btn: ['\u786E\u5B9A', '\u53D6\u6D88'] //\u6309\u94AE
+						}, function(){
+							$.postAjax({
+								success: true,
+            					error: false,
+	            				url: "funds/reply_pay",
+	            				data: {id: data.id},
+	            				before: function (){
+									_this.attr("disabled", true);
+								},
+								callback: function (){
+									_this.attr("disabled", false);
+									$("#sample-table").dataTable().fnDraw(false);
+								}
+							});
+						});
+            		});
+            	}});
+		
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''funds/reply_export'')')}" class="invisible" type="text/javascript">
+		expor = '<a href="javasctipt:;" class="blue reply-export" data-rel="popover-notitle" data-placement="bottom" data-trigger="hover" data-placement="bottom" data-content="导出Excel"><i class="fa fa-share-square-o bigger-130"></i></a>';
+		
+		options.rowCallbacks.push({render: function (row, data){
+            		$('td:eq(7)', row).find(".reply-export").off().on("click", function (){
+            			
+            		});
+            	}});
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''funds/reply_delete'')')}" class="invisible" type="text/javascript">
+		delet = function (data) {
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="funds/reply_delete" href="javascript:;"><i class="fa fa-trash-o bigger-130"></i></a>';
+		};
+	</script>
+	<script class="invisible" type="text/javascript">
+		if (pay != "" || expor != "" || delet != "") {
+			options.columns.push({  
+					"data" : "state",
+					"class" : "center word-break-normal",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return '<div class="action-buttons">' + 
+							(data?"":pay) + expor + (delet==""?"":delet(full.id)) + '</div>';
+					}
+				});
+		}
+		var paypal = new PayPal(options);
+		paypal.dataTab();
+	</script>
+</body>
+</html>

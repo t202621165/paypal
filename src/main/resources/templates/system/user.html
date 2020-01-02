@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('用户管理')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('系统管理','用户管理')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+								<li th:if="${#authorization.expression('hasAuthority(''user/add'')')}" class="li-new-mail pull-right">
+									<button id="modal-add" data-toggle='modal' data-target="#modal-table" class="btn btn-app btn-primary btn-xs" style="height: 34px;">
+										<i class="fa fa-user"></i>添加用户
+									</button>
+								</li>
+							</ul>
+							<div class="space-6"></div>
+							<div class="tabbable user-list">
+								<div class="col-sm-4 no-padding">
+									<div class="widget-box user-list-left user-list-box">
+										<div class="widget-header header-color-blue" style="border-bottom: none;">
+											<h5 class="bigger lighter"><i class="fa fa-users"></i>管理员分类列表</h5>
+										</div>
+
+										<div class="widget-main">
+											<div class="side_title">
+												<a class="close_btn"><span class="side-show" data-rel="tooltip" data-placement="bottom" title="隐藏"></span></a>
+											</div>
+											<ul class="list-unstyled spaced2">
+
+												<li><i class="fa fa-users green"></i> <a class="user-group" href="javascript:;" th:text="${'全部管理员' + '（' + #lists.size(users) + '）'}"></a></li>
+												<li th:each="item:${roles}">
+													<i class="fa fa-users orange"></i>
+													<a class="user-group" th:attr="data-parent-value=${item.id},data-role-name=${item.roleName}" href="javascript:;" th:text="${item.roleName + '（' + #lists.size(item.users) + '）'}"></a>
+												</li>
+											</ul>
+										</div>
+
+									</div>
+								</div>
+								<div class="col-sm-8" id="user-list-right">
+									<div class="side_title none">
+										<a class="close_btn"><span class="side-hide" data-rel="tooltip" data-placement="bottom" title="显示"></span></a>
+									</div>
+									<h4 class="header blue lighter">
+										<i class="fa fa-user"></i>
+										用户列表
+									</h4>
+									<div class="tab-content no-border" style="padding: 12px 0px;">
+										<div class="table-responsive">
+											<div id="accordion" class="accordion-style1 panel-group" th:if="${users} != null">
+												<div class="panel panel-default coll_parent" th:each="item,indexState:${users}" th:id="${'coll_parent_' + indexState.index}">
+													<div class="panel-heading">
+														
+														<h4 class="panel-title">
+															<a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" th:href="${'#collapse_' + indexState.index}">
+																<i class="bigger-110 fa fa-hand-o-right" data-icon-hide="fa-hand-o-down" data-icon-show="fa-hand-o-right"></i>&nbsp;
+																<span th:text="${item.userName}"></span>
+																<button th:if="${#authorization.expression('hasAuthority(''user/delete'')')} and ${#authentication.principal.id} != ${item.id}" class="btn-link btn-delete" data-flash="true" th:id="${item.id}" data-ajax-url="user/delete" style="height: 34px;float: right;margin-top: -7px;"><i class="fa fa-trash"></i></button>
+															</a>
+														</h4>
+													</div>
+	
+													<div class="panel-collapse collapse" th:id="${'collapse_' + indexState.index}" style="height: 0px;">
+														<div class="panel-body">
+															<div class="row form-horizontal">
+																<div class="col-xs-12 bottom-5">
+																	<label class="col-sm-2 control-label no-padding-right" for="form-field-username">用户名：</label>
+	
+																	<div class="col-sm-4">
+																		<span class="block input-icon input-icon-right">
+																			<label th:text="${item.userName}" th:attr="data-user-id=${item.id}" class="col-sm-2 control-label no-padding-right" for="form-field-username"></label>
+																		</span>
+																		<button th:if="${#authorization.expression('hasAuthority(''user/pass'')')}" data-toggle='modal' data-target="#modal-table" class="btn-link btn-xs btn-pass" th:id="${item.id}" style="height: 34px;float: right;">修改密码</button>
+																	</div>
+																</div>
+																<div class="col-xs-12 bottom-5">
+																	<label class="col-sm-2 control-label no-padding-right" for="form-field-username">状　态：</label>
+		
+																	<div class="col-sm-4">
+																		<div class="input-group">
+																			<label style="margin: 5px 0 0;">
+																				<input type="checkbox" class="ace ace-switch ace-switch-3 on-or-off"  data-ajax-url="user/state" th:value="${item.id}" th:checked="${item.state}">
+																				<span class="lbl"></span>
+																			</label>
+																		</div>
+																	</div>
+																</div>
+																<div class="col-xs-12 bottom-5" th:if="${roles} != null">
+																	<label class="col-sm-2 control-label no-padding-right" for="form-field-username">角　色：</label>
+		
+																	<div class="col-sm-6">
+																		<div class="col-sm-6" th:each="role:${roles}">
+																			<label th:if="${#authorization.expression('hasAuthority(''user/roles'')')}">
+																				<input th:attr="data-parent-id=${'#coll_parent_' + indexState.index},data-user-id=${item.id},data-role-name=${role.roleName}" 
+																						th:id="${'coll_child'+indexState.index+'_'+role.id}" name="roleId" 
+																							th:value="${role.id}" type="checkbox" class="ace">
+																				<span class="lbl" th:text="${' ' + role.roleName}"></span>&nbsp;
+																			</label>
+																			<label th:if="${!#authorization.expression('hasAuthority(''user/roles'')')}">
+																				<input th:id="${'coll_child'+indexState.index+'_'+role.id}" type="checkbox" class="ace" th:disabled="${!#authorization.expression('hasAuthority(''user/roles'')')}">
+																				<span class="lbl" th:text="${' ' + role.roleName}"></span>&nbsp;
+																			</label>
+																		</div>
+																	</div>
+																	<script class="invisible" type="text/javascript" th:inline="javascript">
+																		var roles = [[${item.roles}]];
+																		var _inputId = [[${'coll_child' + indexState.index}]];
+																		if (roles != "") {
+																			for (var i = 0; i < roles.length; i++) {
+																				var _input = document.getElementById(_inputId+"_"+roles[i].id);
+																				_input.checked = true;
+																			}
+																		}
+																	</script>
+																</div>
+															</div>
+	
+														</div>
+													</div>
+												</div>
+	
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	<script class="invisible" type="text/javascript" th:if="${!#authorization.expression('hasAuthority(''user/add'')')}">
+		$("#modal-add").ModalBox({
+			title: "添加用户",
+			url: "user/add",
+			_flash: true,
+			forms: [
+				{title: "用户名　",name: "userName",doc: "input",docType: "text"},
+				{title: "登录密码",name: "passWord",doc: "input",docType: "password"},
+				{title: "确认密码",name: "confirmPass",doc: "input",docType: "password"}
+			]
+		});
+	</script>
+	<script class="invisible" type="text/javascript">
+		$(".close_btn").on("click", function (){
+			var _widgetBox = $(".user-list-box");
+			if (_widgetBox.is(":hidden")){
+				_widgetBox.css("display","block");
+				$("#user-list-right").attr("class","col-sm-8");
+				$(".side-hide").parent().parent().addClass("none");
+				$(".side-show").parent().parent().removeClass("none");
+			}else{
+				_widgetBox.css("display","none");
+				$("#user-list-right").attr("class","col-xs-12");
+				$(".side-show").parent().parent().addClass("none");
+				$(".side-hide").parent().parent().removeClass("none")
+			}
+		});
+	</script>
+	
+</body>
+</html>

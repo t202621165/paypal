@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('资金列表')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('资金管理','资金列表')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4>账户查询</h4>
+									<span class="widget-toolbar">
+										<a href="javascript:;">
+											<i class="fa fa-refresh"></i>
+										</a>
+
+										<a href="javascript:;" data-action="collapse">
+											<i class="fa fa-chevron-up"></i>
+										</a>
+									</span>
+								</div>
+								<div class="widget-body">
+									<div class="widget-main">
+										<form id="searchForm">
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">
+															<i class="fa fa-calendar bigger-110"></i>
+														</span>
+														<input class="form-control date-range-picker" type="text" id="id-date-range-picker-1">
+													</div>
+												</div>
+												<input type="hidden" name="startDate">
+												<input type="hidden" name="endDate">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">余额</span>
+														<input name="startAmount" type="text" class="form-control search-query" placeholder="0">
+														<span class="input-group-addon" style="background: none;border: none;padding: 5px;">-</span>
+														<input name="endAmount" type="text" class="form-control search-query" placeholder="999..">
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">商户</span>
+														<input name="merchantId" type="text" class="form-control search-query" placeholder="请输入商户ID">
+													</div>
+												</div>
+												
+												<div class="col-xs-12 text-center">
+													<button type="button" class="btn btn-app btn-yellow btn-xs btn-yesterday" style="height: 34px;padding: 0 15px;">上一天</button>
+													<button type="button" class="btn btn-app btn-primary btn-xs btn-today" style="height: 34px;padding: 0 15px;">今天</button>
+													<button type="button" class="btn btn-app btn-yellow btn-xs btn-tomorrow disabled" style="height: 34px;padding: 0 15px;">下一天</button>
+													<button type="button" class="btn btn-app btn-primary btn-xs btn-query" style="height: 34px;padding: 0 15px;">查询</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-xs-12">
+							<div class='widget-box-overlay none'><i class='fa fa-spinner fa-spin fa-3x fa-fw white'></i></div>
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="tabbable">
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div class="table-responsive">
+										<table id="sample-table"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center">商户ID/收款人</th>
+													<th class="center">账户余额</th>
+													<th class="center">支付宝</th>
+													<th class="center">微信</th>
+													<th class="center">网银支付</th>
+													<th class="center">蚂蚁花呗</th>
+													<th class="center">QQ钱包</th>
+													<th class="center">财付通</th>
+													<th class="center">银联扫码</th>
+													<th class="center">支付宝H5</th>
+													<th class="center">微信H5</th>
+												</tr>
+											</thead>
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- date range picker scripts -->
+	<div th:replace="common/common_js :: daterangepicker"></div>
+
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script type="text/javascript">
+		$('.date-range-picker').daterangepicker();
+		var paypal = new PayPal({
+			rangePicker: true,
+			element: "#sample-table",
+			ajax:{
+				url: "funds/list"
+			},
+			order: [1, "desc"],
+			columns : [
+				{  
+					"data" : "merchantId",
+					"class" : "center",
+					"orderable": false,
+					"render": function(data, type, full) {
+						return "<p class='tab-p-heard'>"+full.realName+"</p>"+
+								"<p class='tab-p-foot'><a href='profile.html?id="+full.merchantId+
+								"' target='_blank' rel='noopener noreferrer'>"+data+"</a></p>";
+					}
+				},
+				{  
+					"data" : "overMoney",
+					"class" : "center green",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return "<i class='fa fa-rmb'></i> "+ $.toThousands(data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("alipay",data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("wechat",data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsListBank(data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("hbpay",data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("qpay",data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("tenpay",data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("ecode",data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("h5_alipay",data);
+					} 
+				},
+				{  
+					"data" : "list",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return mapping().fundsList("h5_wechat",data);
+					} 
+				}
+            ]
+		});
+		paypal.paging();
+	</script>
+	
+</body>
+</html>

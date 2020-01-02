@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('T+0结算')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('资金管理','T+0结算')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4>账户查询</h4>
+									<span class="widget-toolbar">
+										<a href="javascript:;">
+											<i class="fa fa-refresh"></i>
+										</a>
+
+										<a href="javascript:;" data-action="collapse">
+											<i class="fa fa-chevron-up"></i>
+										</a>
+									</span>
+								</div>
+								<div class="widget-body">
+									<div class="widget-main">
+										<form id="searchForm">
+											<div class="row">
+												<input type="hidden" name="state" value="0">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">余额</span>
+														<input name="startAmount" type="text" class="form-control search-query" placeholder="0">
+														<span class="input-group-addon" style="background: none;border: none;padding: 5px;">-</span>
+														<input name="endAmount" type="text" class="form-control search-query" placeholder="999..">
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">商户</span>
+														<input name="merchantId" type="text" class="form-control search-query" placeholder="请输入商户ID">
+														<span class="input-group-btn">
+															<button type="button" class="btn btn-primary btn-sm btn-query">查询</button>
+														</span>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-xs-12">
+							<div class='widget-box-overlay none'><i class='fa fa-spinner fa-spin fa-3x fa-fw white'></i></div>
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="tabbable">
+								<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+									<li th:if="${#authorization.expression('hasAuthority(''funds/t0_settlement'')')}">
+										<button data-ajax-url="funds/t0_settlement" class="btn btn-app btn-primary btn-xs btn-batch" style="height: 34px;">
+											<i class="fa fa-sitemap"></i>批量结算
+										</button>
+									</li>
+								</ul>
+								
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div class="table-responsive">
+										<table id="sample-table"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center">
+														<label><input type="checkbox" class="ace"><span class="lbl"></span></label>
+													</th>
+													<th class="center">商户/收款人</th>
+													<th class="center">收款银行</th>
+													<th class="center">收款帐号</th>
+													<th class="center">账户余额</th>
+													<th class="center">当日利润</th>
+													<th class="center">结算金额</th>
+													<th class="center">手续费</th>
+													<th class="center">开户地区</th>
+													<th th:if="${#authorization.expression('hasAuthority(''funds/t0_settlement'')')}" class="center">操作</th>
+												</tr>
+											</thead>
+
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script class="invisible" type="text/javascript">
+		var options = {
+			rangePicker: false,
+			element: "#sample-table",
+			ajax:{
+				url: "funds/t0_list"
+			},
+			order: [4, "desc"],
+			columns : [
+				{  
+					"data" : "id",
+					"class" : "center",
+					"orderable": false,
+					"render": function(data, type, full) {
+						return '<label><input name="id" value="'+ data +'" type="hidden" class="serialize"><input type="checkbox" class="ace serialize"><span class="lbl"></span></label>';
+					}
+				},
+				{  
+					"data" : "realName",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return "<p class='tab-p-heard'>"+full.merId+"</p><p class='tab-p-foot'>"+data+"</p>";
+					} 
+				},
+				{  
+					"data" : "bankName",
+					"class" : "center hidden-680",
+					"orderable": false,
+				},
+				{  
+					"data" : "bankNumber",
+					"class" : "center hidden-768",
+					"orderable": false
+				},
+				{  
+					"data" : "overMoney",
+					"orderSequence": ["desc","asc"],
+					"class" : "center green",
+					"render" : function(data, type, full) {
+						return "<i class='fa fa-rmb'></i> "+ $.toThousands(data);
+					}
+				},
+				{  
+					"data" : "blockMoney",
+					"orderable": false,
+					"class" : "center grey hidden-680",
+					"render" : function(data, type, full) {
+						return "<i class='fa fa-rmb'></i> "+ $.toThousands(data);
+					}
+				},
+				{  
+					"data" : "overMoney",
+					"orderable": false,
+					"class" : "center width-percent8",
+					"render" : function(data, type, full) {
+						return '<input name="amount" type="text" class="form-control search-query text-center serialize" value="'+data+'">';;
+					}
+				},
+				{  
+					"data" : null,
+					"class" : "center width-percent5",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return '<input name="cost" type="text" class="form-control search-query text-center serialize" value="0.00">';
+					}
+				},
+				{  
+					"data" : "bankBranch",
+					"class" : "center hidden-768",
+					"orderable": false
+				}
+            ],
+            rowCallbacks: [
+            	{render: function (row, data){
+            		mapping().amountCheck(row ,data.overMoney, 6, "amount");
+            		mapping().amountCheck(row ,null, 7, "cost");
+            	}}
+            ]
+		};
+	</script>
+	
+	<script th:if="${#authorization.expression('hasAuthority(''funds/t1_settlement'')')}" class="invisible" type="text/javascript">
+		options.drawCallbacks = [
+            	{render: function (){
+            		mapping().batch();
+            	}},
+            	{render: function (){
+            		mapping().settlements();
+            	}}
+            ];
+		options.columns.push({  
+					"data" : "id",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return '<button data-ajax-url="funds/t0_settlement" class="btn btn-link btn-settlement" style="height: 34px;">结算</button>';
+					}
+				});
+	</script>
+	<script class="invisible" type="text/javascript">
+		var paypal = new PayPal(options);
+		paypal.paging();
+	</script>
+</body>
+</html>

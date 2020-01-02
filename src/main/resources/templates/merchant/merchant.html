@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('商户列表')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('商户管理','商户列表')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4>商户查询</h4>
+								</div>
+
+								<div class="widget-body">
+									<div class="widget-main">
+										<form id="searchForm">
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">商户</span>
+														<input name="id" type="text" class="form-control search-query" placeholder="请输入要查询的商户ID">
+														<span class="input-group-btn">
+															<button type="button" class="btn btn-primary btn-sm btn-query">查询</button>
+														</span>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="tabbable">
+								<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+									<li class="li-new-mail pull-right" 
+										th:if="${#authorization.expression('hasAuthority(''merchant/gallerys'')')}">
+										<button id="modal-add" data-toggle="modal" data-target="#modal-table" class="btn btn-app btn-primary btn-xs" style="height: 34px;">
+											<i class="fa fa-exchange"></i>通道切换
+										</button>
+									</li>
+									<li data-tab-key class="active first" data-rel="tooltip" data-placement="bottom" title="查看全部商户">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">全部</a>
+									</li>
+									
+									<li class="dropdown">
+										<a data-toggle="dropdown" class="dropdown-toggle" href="javasctipt:;">
+											状态 &nbsp;<i class="fa fa-caret-down bigger-110 width-auto"></i>
+										</a>
+
+										<ul class="dropdown-menu dropdown-info">
+											<li data-placement data-tab-key="state" data-tab-value="1">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">
+													<span class="green"><i class="fa fa-check-circle-o"></i> 激活</span>
+												</a>
+											</li>
+
+											<li data-placement data-tab-key="state" data-tab-value="2">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">
+													<span class="red"><i class="fa fa-ban"></i> 禁用</span>
+												</a>
+											</li>
+											
+											<li data-placement data-tab-key="state" data-tab-value="0">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">
+													<span class="light-grey"><i class="fa fa-eye-slash"></i> 未激活</span>
+												</a>
+											</li>
+											
+											<li data-placement data-tab-key="state" data-tab-value="3">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">
+													<span class="orange"><i class="fa fa-exclamation-triangle"></i> 支付功能关闭</span>
+												</a>
+											</li>
+										</ul>
+									</li>
+									
+									<li class="dropdown">
+										<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:;">
+											商户类型 &nbsp;<i class="fa fa-caret-down bigger-110 width-auto"></i>
+										</a>
+
+										<ul class="dropdown-menu dropdown-info">
+											<li data-placement data-tab-key="type" data-tab-value="false">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">个人商户</a>
+											</li>
+
+											<li data-placement data-tab-key="type" data-tab-value="true">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">企业商户</a>
+											</li>
+											<li class="divider"></li>
+											<li data-placement data-tab-key="agency" data-tab-value="true">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">代理商户</a>
+											</li>
+
+											<li data-placement data-tab-key="agency" data-tab-value="false">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">普通商户</a>
+											</li>
+											<li class="divider"></li>
+											<li data-placement data-tab-key="settlementType" data-tab-value="0">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">T+0</a>
+											</li>
+											
+											<li data-placement data-tab-key="settlementType" data-tab-value="1">
+												<a data-toggle="tab" href="javascript:;" data-target="draft">T+1</a>
+											</li>
+										</ul>
+									</li>
+
+								</ul>
+								
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div class="table-responsive">
+										<table id="sample-table"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center"><i class="fa fa-hashtag"></i></th>
+													<th class="center">呢称</th>
+													<th class="center">帐号</th>
+													<th class="center hidden-680">邮箱</th>
+													<th class="center hidden-480">商户类型</th>
+													<th class="center hidden-480">结算类型</th>
+													<th class="center">状态</th>
+													<th th:if="${#authorization.expression('hasAuthority(''into_merchant.html'')')} or ${#authorization.expression('hasAuthority(''merchant/delete'')')}" class="center">操作</th>
+												</tr>
+											</thead>
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+
+	<!-- modal-table -->
+	<div id="modal-table" class="modal fade" tabindex="-1" th:if="${#authorization.expression('hasAuthority(''merchant/gallerys'')')}">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title">切换通道</h4>
+				</div>
+				<div class="modal-body">
+					<div class="tabbable">
+						<div id="hot" class="tab-pane in active">
+							<div class="row" th:if="${!#lists.isEmpty(products)}">
+								<div th:each="item:${products}" th:unless="${item.type} == 1" class="col-xs-6 col-sm-6 bottom-5 form-rate" 
+										th:if="${!#lists.isEmpty(item.gallerys)}" th:id="${item.productMark}">
+									<div class="input-group col-xs-12 no-padding">
+										<span class="input-group-addon product-addon-80" data-rel="tooltip" data-placement="bottom" th:title="${item.productName}" 
+											th:style="'background-image: url(assets/images/product/'+${item.productMark}+'.png)'"></span>
+										<input class="serialize" type="hidden" name="productId" th:value="${item.id}">
+										<select name="galleryId" class="form-control" id="form-field-select-1" style="height: 34px;">
+											<option value="">--请选择--</option>
+											<option th:each="gallery:${item.gallerys}" th:value="${gallery.id}" th:text="${gallery.galleryName}"></option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer no-margin-top">
+					<button class="btn btn-sm btn-danger" data-dismiss="modal"><i class="fa fa-remove"></i>关闭</button>
+				</div>
+			</div>
+		</div>
+	</div><!-- PAGE CONTENT ENDS -->
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script class="invisible" type="text/javascript">
+		var options = {
+			rangePicker: false,
+			element: "#sample-table",
+			ajax:{
+				url: "merchant/list"
+			},
+			order: [0,"desc"],
+			columns : [
+				{  
+					"data" : "id",
+					"class" : "center"
+				},
+				{  
+					"data" : "nickName",
+					"class" : "center"
+				},
+				{  
+					"data" : "account",
+					"class" : "center"
+				},
+				{  
+					"data" : "email",
+					"class" : "center hidden-680"
+				},
+				{  
+					"data" : "type",
+					"class" : "center hidden-680",
+					"render" : function(data, type, full) {
+						var result = "个人";
+						if (data)
+							result = "企业";
+						return result;
+					}
+				},
+				{  
+					"data" : "settlementType",
+					"class" : "center hidden-680",
+					"render" : function(data, type, full) {
+						var result = "T+0";
+						if (data == 1)
+							result = "T+1";
+						return result;
+					}
+				},
+				{  
+					"data" : "state",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return $.getMerchantState(full);
+					}
+				}
+				
+            ],
+            drawCallbacks: [
+            	{render: function (){
+            		mapping().merchantState();
+            	}}
+            ]
+		};
+		var edit = "",edit0 = "",delet = "",delet0 = "";
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''profile.html'')')}" class="invisible" type="text/javascript">
+		options.columns[2] = {  
+					"data" : "account",
+					"class" : "center",
+					"render" : function(data, type, full) {
+						return "<a href='profile_"+ full.id +".html' target='_profile' data-rel='tooltip' "+
+							"data-placement='bottom' title='点击查看商户资料'>"+data+"</a>";
+					} 
+				};
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''into_merchant.html'')')}" class="invisible" type="text/javascript">
+		edit = function (data) {
+			return '<a class="blue" href="javascript:void(0)" onclick = go('+data+'); target="into_merchant" data-rel="popover-notitle" data-placement="bottom" data-trigger="hover" data-placement="bottom" data-content="进入商户管理后台"><i class="fa fa-edit bigger-130"></i></a>';
+		};
+		edit0 = function (data) {
+			return '<a class="blue"  href="javascript:void(0)" onclick = go('+data+'); target="into_merchant">进入后台</a>';
+		};
+		function go(data){
+		    $.ajax({
+		    	type:"GET",
+		    	url:"into_merchant.html",
+		    	data:{"id":data},
+		    	success:function(result){	    		
+		    		window.open(result.domain+"?"+"account="+result.account+"&sign="+result.sign);
+		    	}
+		    });
+		}
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''merchant/delete'')')}" class="invisible" type="text/javascript">
+		delet = function (data) {
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="merchant/delete" href="javascript:;"><i class="fa fa-trash-o bigger-130"></i></a>';
+		};
+		delet0 = function (data) {
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="merchant/delete" href="javascript:;">删除商户</a>';
+		};
+	</script>
+	<script class="invisible" type="text/javascript">
+		if ((edit != "" && typeof edit == "function" && edit0 != "" && typeof edit0 == "function")
+			 || (delet != "" && typeof delet == "function" && delet0 != "" && typeof delet0 == "function"))
+			options.columns.push({  
+						"data" : "id",
+						"class" : "center",
+						"orderable": false,
+						"render" : function(data, type, full) {
+							return '<div class="visible-md visible-lg action-buttons">' + (edit==""?"":edit(data)) + (delet==""?"":delet(data)) + '</div>' + 
+									'<div class="hidden-md hidden-lg action-buttons">' +
+										'<div class="inline position-relative">' +
+											'<i class="fa fa-cog bigger-120 blue" data-toggle="dropdown"></i>' +
+			
+											'<ul class="dropdown-menu dropdown-only-icon dropdown-light pull-right dropdown-caret dropdown-close">' +
+												'<li>' + (edit0==""?"":edit0(data)) + '</li>' +
+												'<li>' + (delet0==""?"":delet0(data)) + '</li>' +
+											'</ul>' +
+										'</div>' +
+									'</div>';
+						}
+					});
+		
+		var paypal = new PayPal(options);
+		paypal.dataTab();
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''merchant/gallerys'')')}" class="invisible" type="text/javascript">
+		$("select[name=galleryId]").off().on("change",function (){
+			if (this.value) {
+				var data = {
+					productId: $(this).prev().val(),
+					galleryId: this.value
+				};
+				mapping().merchantGallerys(data);
+			}
+		});
+	</script>
+</body>
+</html>

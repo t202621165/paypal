@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN" 
+		"http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+
+<urlrewrite>
+
+	<!-- 批付详情 -->
+	<rule>
+		<from>^/reply_details_(\d+).html$</from>
+		<to>/reply_details.html?id=$1</to>
+	</rule>
+	
+	<!-- 商户资料 -->
+	<rule>
+		<from>^/profile_(\d+).html$</from>
+		<to>/profile.html?id=$1</to>
+	</rule>
+	
+	<!-- 商户后台跳转 -->
+	<rule>
+		<from>^/into_merchant_(\d+).html$</from>
+		<to>/into_merchant.html?id=$1</to>
+	</rule>
+	
+	<!-- 通道详情 -->
+	<rule>
+		<from>^/g_details_(\d+).html$</from>
+		<to>/g_details.html?id=$1</to>
+	</rule>
+	
+	<!-- 网银产品列表 -->
+	<rule>
+		<from>^/ebank_(\d+).html$</from>
+		<to>/ebank.html?id=$1</to>
+	</rule>
+	
+	<!-- 角色详情 -->
+	<rule>
+		<from>^/r_details_(\d+).html$</from>
+		<to>/r_details.html?id=$1</to>
+	</rule>
+	
+</urlrewrite>

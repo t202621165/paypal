@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('通道详情')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+	<div class="main-container" id="main-container">
+		
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('通道管理','通道详情')"></div>
+
+				<div class="page-content">
+					<div class="page-header">
+						<h1>
+							<small>
+								<a href="gallery.html"><i class="fa fa-reply"></i>&nbsp;返回通道列表</a>
+							</small>
+						</h1>
+					</div><!-- /.page-header -->
+
+					<div class="row">
+						<div class="col-xs-12">
+							<div class='widget-box-overlay none'><i class='fa fa-spinner fa-spin fa-3x fa-fw white'></i></div>
+							<div>
+								<div class="user-profile">
+									<div class="tabbable">
+										<ul class="nav nav-tabs">
+											<li class="active">
+												<a data-toggle="tab" href="#home">
+													<i class="green fa fa-paypal bigger-120"></i>详情
+												</a>
+											</li>
+											
+											<li>
+												<a data-toggle="tab" href="#settings">
+													<i class="fa fa-cog bigger-120"></i>设置
+												</a>
+											</li>
+
+											<li th:if="${#authorization.expression('hasAuthority(''gallery/edit'')')}">
+												<a data-toggle="tab" href="#edit">
+													<i class="blue fa fa-edit bigger-120"></i>编辑
+												</a>
+											</li>
+										</ul>
+
+										<div class="tab-content no-border padding-24">
+											<div id="home" class="tab-pane in active">
+												<div class="row">
+													<div class="col-xs-12 col-sm-7">
+														<h4 class="blue">
+															<span class="middle">爱玩在线</span>
+
+															<span th:if="${gallery.state}" class="label label-success arrowed-in-right">
+																<i class="fa fa-check smaller-80 align-middle"></i>
+																启用
+															</span>
+															<span th:if="${!gallery.state}" class="label label-danger arrowed-in-right">
+																<i class="fa fa-check smaller-80 align-middle"></i>
+																禁用
+															</span>
+														</h4>
+
+														<div id="gallery-info" class="profile-user-info">
+															<div class="profile-info-row">
+																<div class="profile-info-name">名　称</div>
+
+																<div class="profile-info-value">
+																	<span th:text="${gallery.galleryName}">--</span>
+																</div>
+															</div>
+
+															<div class="profile-info-row">
+																<div class="profile-info-name">标　识</div>
+
+																<div class="profile-info-value">
+																	<span th:text="${gallery.galleryMark}">--</span>
+																</div>
+															</div>
+
+															<div class="profile-info-row">
+																<div class="profile-info-name">帐　号</div>
+
+																<div class="profile-info-value">
+																	<span th:text="${gallery.galleryAccount} == null?'--':${gallery.galleryAccount}">--</span>
+																</div>
+															</div>
+
+															<div class="profile-info-row" th:if="${gallery.galleryMD5Key} != null">
+																<div class="profile-info-name">MD5密钥</div>
+
+																<div class="profile-info-value">
+																	<pre th:text="${gallery.galleryMD5Key}">--</pre>
+																</div>
+															</div>
+
+															<div class="profile-info-row" th:if="${gallery.galleryPubKey} != null and !${#strings.isEmpty(gallery.galleryPubKey)}">
+																<div class="profile-info-name">RSA公钥</div>
+
+																<div class="profile-info-value">
+																	<pre th:text="${gallery.galleryPubKey}">--</pre>
+																</div>
+															</div>
+
+															<div class="profile-info-row" th:if="${gallery.galleryPrivateKey} != null and !${#strings.isEmpty(gallery.galleryPrivateKey)}">
+																<div class="profile-info-name">RSA私钥</div>
+
+																<div class="profile-info-value">
+																	<pre th:text="${gallery.galleryPrivateKey}">--</pre>
+																</div>
+															</div>
+
+															<div class="profile-info-row">
+																<div class="profile-info-name">接口描述</div>
+
+																<div class="profile-info-value">
+																	<span th:text="${gallery.galleryDescription}">--</span>
+																</div>
+															</div>
+														</div>
+													</div><!-- /span -->
+													
+													<div class="col-xs-12 col-sm-5">
+														<div class="widget-box transparent">
+															<div class="widget-header widget-header-small">
+																<h4 class="smaller">
+																	<i class="fa fa-pie-chart bigger-110"></i>
+																	交易金额统计
+																</h4>
+															</div>
+
+															<div id="total-main" class="widget-body">
+															<script type="text/javascript">
+																var height = document.getElementById("gallery-info").clientHeight;
+																document.getElementById("total-main").style.height = height+"px";
+															</script>
+															</div>
+														</div>
+													</div>
+													
+												</div><!-- /row-fluid -->
+												<div class="hr hr-18 dotted hr-double"></div>
+												<div class="row">
+													<div class="col-xs-12">
+														<div class="widget-box transparent">
+															<div class="widget-header widget-header-small">
+																<h4 class="smaller">
+																	<i class="fa fa-bar-chart bigger-110"></i>
+																	产品充值统计
+																</h4>
+															</div>
+
+															<div id="main" class="widget-body" style="height: 320px;"></div>
+														</div>
+													</div>
+												</div>
+											</div><!-- #home -->
+											
+											<div id="settings" class="tab-pane gallery-rate">
+												<div class="hr hr-18 dotted hr-double"></div>
+												<div class="widget-header widget-header-small header-color-blue2">
+													<h4 class="smaller">
+														<i class="fa fa-percent bigger-120"></i>
+														通道费率
+													</h4>
+												</div>
+												<div class="tabbable">
+	
+													<div class="tab-content profile-edit-tab-content">
+														
+														<div class="tab-pane in active">
+															<input type="hidden" id="galleryId" th:value="${gallery.id}">
+															<div class="space-10"></div>
+															<div class="row">
+																<div class="col-xs-12 no-padding">
+																	<div class="widget-box transparent">
+																		<div class="widget-header widget-header-small header-color-blue2">
+																			<h4 class="smaller">
+																				<i class="fa fa-free-code-camp bigger-120"></i>热门
+																			</h4>
+																		</div>
+			
+																		<div class="widget-body" id="product-body">
+																			<div class="widget-main" style="padding: 12px 0;" th:if="${details} != null">
+																				<div class="col-sm-4 bottom-5 form-rate" th:each="item:${details}" th:if="${item.productType}==0" th:id="${item.productMark}">
+																					<div class="col-gl-1">
+																						<div class="input-group">
+																							<span class="input-group-addon product-addon-68" data-rel="tooltip" data-placement="bottom" th:title="${item.productName}" 
+																						th:style="'background-image: url(assets/images/product/'+${item.productMark}+'.png)'"></span>
+																						</div>
+																					</div>
+																					<div class="col-gl-2">
+																						<input class="serialize" type="hidden" name="productId" th:value="${item.productId}">
+																						<input class="form-control rate serialize onkey-set" type="text" th:id="${item.productMark}" maxlength="5" name="rate" placeholder="费率" th:value="${item.rate}">
+																					</div>
+																					<div class="col-gl-3">
+																						<div class="input-group">
+																							<input class="form-control serialize onkey-set" type="text" name="url" placeholder="接口请求地址" th:value="${item.url}">
+																							<span class="input-group-addon" style="padding: 0;" data-rel="tooltip" data-placement="bottom" title="开启/关闭轮循">
+																								<input class="serialize" type="hidden" name="state" th:value="${item.state} == null?false:${item.state}">
+																								<input type="checkbox" class="table-checkbox check-state" th:checked="${item.state}">
+																							</span>
+																						</div>
+																					</div>
+																				</div>
+																				
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+															
+															<div class="row">
+																<div class="col-xs-12 no-padding">
+																	<div class="widget-box transparent">
+																		<div class="widget-header widget-header-small header-color-blue2">
+																			<h4 class="smaller">
+																				<i class="fa fa-credit-card bigger-120"></i>网银
+																			</h4>
+																		</div>
+			
+																		<div class="widget-body" id="product-bank-body">
+																			<div class="widget-main" style="padding: 12px 0;" th:if="${details} != null">
+																				<div class="col-sm-4 bottom-5 form-rate" th:each="item:${details}" 
+																					th:if="${item.productType}==1" th:id="${item.productMark}">
+																					<div class="col-gl-1">
+																						<div class="input-group">
+																							<span class="input-group-addon product-addon-68" data-rel="tooltip" data-placement="bottom" th:title="${item.productName}" 
+																						th:style="'background-image: url(assets/images/product/'+${item.productMark}+'.png)'"></span>
+																						</div>
+																					</div>
+																					<div class="col-gl-2">
+																						<input class="serialize" type="hidden" name="productId" th:value="${item.productId}">
+																						<input class="form-control rate serialize" type="text" th:id="${item.productMark}" maxlength="5" name="rate" placeholder="费率" th:value="${item.rate}">
+																					</div>
+																					<div class="col-gl-3">
+																						<div class="input-group">
+																							<input class="form-control serialize" type="text" name="url" placeholder="接口请求地址" th:value="${item.url}">
+																							<span class="input-group-addon" style="padding: 0;">
+																								<input class="serialize" type="hidden" name="state" th:value="${item.state} == null?false:${item.state}">
+																								<input type="checkbox" class="table-checkbox check-state" th:checked="${item.state}">
+																							</span>
+																						</div>
+																					</div>
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</div>
+													<hr/>
+													<button th:if="${#authorization.expression('hasAuthority(''gallery/edit'')')} and ${details}!=null" data-ajax-url="gallery/details" class="btn btn-primary btn-block settings-save">保存</button>
+												</div>
+											</div><!-- /#pictures -->
+											<div id="edit" class="tab-pane" th:if="${#authorization.expression('hasAuthority(''gallery/edit'')')}">
+												<div class="col-sm-offset-1 col-sm-10">
+													<form class="form-horizontal" id="info-form">
+														<div class="tabbable">
+															<ul class="nav nav-tabs">
+																<li class="active">
+																	<a data-toggle="tab" href="#edit-basic">
+																		<i class="green icon-edit bigger-125"></i>
+																		基本信息
+																	</a>
+																</li>
+			
+																<li>
+																	<a data-toggle="tab" href="#account-pass">
+																		<i class="blue icon-key bigger-125"></i>
+																		账号/密钥
+																	</a>
+																</li>
+			
+																<li>
+																	<a data-toggle="tab" href="#gallery-set">
+																		<i class="blue icon-key bigger-125"></i>
+																		设置
+																	</a>
+																</li>
+															</ul>
+			
+															<div class="tab-content profile-edit-tab-content">
+																
+																<div id="edit-basic" class="tab-pane in active">
+																	<div class="space-10"></div>
+																	<div class="form-group">
+																		<input type="hidden" name="id" th:value="${gallery.id}">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-username">名　称：</label>
+			
+																		<div class="col-sm-8">
+																			<input type="text" name="galleryName" class="form-control" placeholder="接口名称" th:value="${gallery.galleryName}">
+																		</div>
+																	</div>
+			
+																	<div class="space-4"></div>
+			
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-first">标　识：</label>
+			
+																		<div class="col-sm-8">
+																			<input type="text" name="galleryMark" class="form-control" placeholder="接口唯一标识" th:value="${gallery.galleryMark}">
+																		</div>
+																	</div>
+																	
+																	<div class="space-4"></div>
+			
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-first">风　控：</label>
+			
+																		<div class="col-sm-8">
+																			<div class="input-group">
+																				<input class="form-control" type="text" name="riskDomain" placeholder="风控域名" 
+																					th:value="${gallery.riskDomain}" th:readonly="${!gallery.riskState}">
+																				<span class="input-group-addon" style="padding: 0;">
+																					<input type="hidden" name="riskState" th:value="${gallery.riskState}">
+																					<input type="checkbox" class="table-checkbox support-check" onclick="$('input[name=riskState]').val(this.checked)" th:checked="${gallery.riskState}">
+																				</span>
+																			</div>
+																		</div>
+																	</div>
+																	
+																	<div class="space-4"></div>
+			
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-first">描　述：</label>
+			
+																		<div class="col-sm-8">
+																			<textarea class="form-control" name="galleryDescription" rows="3" placeholder="接口信息描述" th:text="${gallery.galleryDescription}"></textarea>
+																		</div>
+																	</div>
+																</div>
+			
+																<div id="account-pass" class="tab-pane">
+																	<div class="space-10"></div>
+																	
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-email">帐　号：</label>
+					
+																		<div class="col-sm-8">
+      																		<input type="text" name="galleryAccount" class="form-control" placeholder="接口帐号" th:value="${gallery.galleryAccount}">
+																		</div>
+																	</div>
+					
+																	<div class="space-4"></div>
+																	
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-email">app_id：</label>
+					
+																		<div class="col-sm-8">
+      																		<input type="text" name="appId" class="form-control" placeholder="微信 app_id" th:value="${gallery.appId}">
+																		</div>
+																	</div>
+					
+																	<div class="space-4"></div>
+					
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-email">MD5密钥：</label>
+					
+																		<div class="col-sm-8">
+	      																	<input type="text" name="galleryMD5Key" class="form-control" placeholder="接口加密-MD5 密钥" th:value="${gallery.galleryMD5Key}">
+																		</div>
+																	</div>
+					
+																	<div class="space-4"></div>
+					
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-website">RSA公钥：</label>
+					
+																		<div class="col-sm-8">
+																			<textarea class="form-control" name="galleryPubKey" rows="3" placeholder="接口加密 -RSA 公钥" th:text="${gallery.galleryPubKey}"></textarea>
+																		</div>
+																	</div>
+					
+																	<div class="space-4"></div>
+					
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-phone">RSA私钥：</label>
+					
+																		<div class="col-sm-8">
+																			<textarea class="form-control" name="galleryPrivateKey" rows="3" placeholder="接口加密 -RSA 私钥" th:text="${gallery.galleryPrivateKey}"></textarea>
+																		</div>
+																	</div>
+																</div>
+																
+																<div id="gallery-set" class="tab-pane">
+																	<div class="space-10"></div>
+			
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-first">金额段：</label>
+			
+																		<div class="col-sm-8">
+																			<div class="input-group">
+																				<input name="minAmount" th:value="${gallery.minAmount}" type="text" class="form-control search-query" placeholder="￥">
+																				<span class="input-group-addon" style="background: none;border: none;padding: 5px;">-</span>
+																				<input name="maxAmount" th:value="${gallery.maxAmount}" type="text" class="form-control search-query" placeholder="￥">
+																			</div>
+																		</div>
+																	</div>
+					
+																	<div class="space-4"></div>
+			
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-first">权　重：</label>
+			
+																		<div class="col-sm-8">
+																			<input type="number" name="weight" class="form-control" placeholder="接口轮循权重" th:value="${gallery.weight}">
+																		</div>
+																	</div>
+					
+																	<div class="space-4"></div>
+					
+																	<div class="form-group">
+																		<label class="col-sm-3 control-label no-padding-right" for="form-field-phone">支持产品：</label>
+					
+																		<div class="col-sm-8" th:if="${not #lists.isEmpty(products)}">
+																			<label th:each="item:${products}" th:if="${item.type}==0" data-rel="tooltip" 
+																				data-placement="bottom" th:title="${item.productName}">
+																				&nbsp;<input name="productIds" th:value="${item.id}" type="checkbox" class="ace" th:checked="${item.galleryId} != null">
+																				<span class="lbl">
+																					<img width="100px" th:alt="${item.productName}" th:src="${'assets/images/product/'+item.productMark+'.png'}" />
+																				</span>
+																			</label>
+																		</div>
+																	</div>
+																</div>
+																
+															</div>
+														</div>
+														<hr/>
+														<button type="button" th:if="${gallery}!=null" data-ajax-url="gallery/edit" class="btn btn-primary btn-block info-save">保存</button>
+													</form>
+												</div><!-- /span -->
+											</div><!-- /#pictures -->
+											
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- PAGE CONTENT ENDS -->
+						</div><!-- /.col -->
+					</div><!-- /.row -->
+				</div><!-- /.page-content -->
+			</div><!-- /.main-content -->
+
+		</div><!-- /.main-container-inner -->
+	</div><!-- /.main-container -->
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<div th:replace="common/common_js :: dist_echarts"></div>
+	
+	<script type="text/javascript">
+		require.config({paths: {echarts: './assets/dist'}});
+		$(function($) {
+			$('.check-state').on("click",function (){
+				$(this).prev().val(this.checked)
+			});
+			$('.support-check').on("click",function (){
+				$(this).parent().prev().attr("readonly",!this.checked)
+			});
+			$(".rate").rate();
+			$("#product-body #ebank").on("keyup blur", ".onkey-set", function (){
+				$("#product-bank-body").find("input[name="+this.name+"]").val(this.value);
+			});
+			$("#product-body #ebank").on("click", ".check-state", function (){
+				$("#product-bank-body").find(".check-state").prop("checked",this.checked);
+				$("#product-bank-body").find("input[name=state]").val(this.checked);
+			});
+			$('.settings-save').on("click",function (){
+				var _this = $(this);
+				var galleryId = $("#galleryId").val();
+				var list = new Array();
+				$(".form-rate").each(function (){
+					var data = {galleryId: galleryId};
+					var ele = $(this).find(".serialize");
+					var serializeData = ele.serializeArray();
+					var isNull = false;
+					for (var index in serializeData) {
+						var _name = serializeData[index].name;
+						var _value = serializeData[index].value;
+						if (_value != ""){
+							data[_name] = _value;
+						}else{
+							isNull = true;
+						}
+					}
+					if (!isNull)
+						list.push(data);
+				});
+				$.pay_post(_this, list);
+			});
+		});
+	</script>
+	<script type="text/javascript" th:if="${data} != null" th:inline="javascript">
+		$(function($) {
+			var data = [[${data}]];
+			$.orderEcharts(data);
+		});
+	</script>
+	<script type="text/javascript" th:if="${total} != null" th:inline="javascript">
+		$(function($) {
+			var data = [[${total}]];
+			$.pieEcharts(data);
+		});
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>common_js</title>
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+	<!-- basic scripts -->
+	<div th:fragment="basic">
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='assets/js/jquery.mobile.custom.min.js'><\/script>");
+		</script>
+		<script th:src="@{assets/js/bootstrap.min.js}"></script>
+		<script th:src="@{assets/js/layer/layer.js}"></script>
+		<script th:src="@{assets/js/zclip/jquery.zclip.min.js}"></script>
+		<script th:src="@{assets/js/typeahead-bs2.min.js}"></script>
+		<script th:src="@{core/js/commom.tools.js}"></script>
+		<script th:src="@{core/js/jquery.paypal.js}"></script>
+		<script th:src="@{core/js/jquery.modal.js}"></script>
+		<script th:src="@{core/js/mapping.js}"></script>
+	</div>
+	<!-- dataTables scripts -->
+	<div th:fragment="dataTables">
+		<script th:src="@{assets/js/jquery.dataTables.min.js}"></script>
+		<script th:src="@{assets/js/jquery.dataTables.bootstrap.js}"></script>
+	</div>
+	<!-- date range picker scripts -->
+	<div th:fragment="daterangepicker">
+		<script th:src="@{assets/js/date-time/moment.min.js}"></script>
+		<script th:src="@{assets/js/date-time/daterangepicker.js}"></script>
+	</div>
+	<!-- chosen scripts -->
+	<div th:fragment="chosen">
+		<script th:src="@{assets/js/chosen.jquery.min.js}"></script>
+		<script th:src="@{assets/js/jquery-ui-1.10.3.full.min.js}"></script>
+	</div>
+	<!-- colorbox scripts -->
+	<div th:fragment="colorbox">
+		<script th:src="@{assets/js/jquery.colorbox-min.js}"></script>
+	</div>
+	<!-- colorbox scripts -->
+	<div th:fragment="echarts">
+		<script th:src="@{assets/js/echarts.min.js}"></script>
+	</div>
+	<div th:fragment="dist_echarts">
+		<script th:src="@{assets/dist/echarts.js}"></script>
+	</div>
+	<!-- nestable scripts -->
+	<div th:fragment="nestable">
+		<script th:src="@{assets/js/jquery.nestable.min.js}"></script>
+	</div>
+	<!-- nestable scripts -->
+	<!-- ace scripts -->
+	<div th:fragment="ace">
+		<script th:src="@{assets/js/ace-extra.min.js}"></script>
+		<script th:src="@{assets/js/ace-elements.min.js}"></script>
+		<script th:src="@{assets/js/ace.min.js}"></script>
+	</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('角色管理')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('系统管理','角色管理')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="tabbable">
+								<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+									<li th:if="${#authorization.expression('hasAuthority(''role/add'')')}" class="li-new-mail pull-right">
+										<button id="modal-add" data-toggle='modal' data-target="#modal-table" class="btn btn-app btn-primary btn-xs" style="height: 34px;">
+											<i class="fa fa-user"></i>添加角色
+										</button>
+									</li>
+									<li class="active">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">全部</a>
+									</li>
+								</ul>
+								
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div class="table-responsive">
+										<table id="sample-table" class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center"><i class="fa fa-hashtag"></i></th>
+													<th class="center">角色名称</th>
+													<th class="center">人数</th>
+													<th class="center">用户</th>
+													<th class="center">描述</th>
+													<th th:if="${#authorization.expression('hasAuthority(''r_details.html'')')} or ${#authorization.expression('hasAuthority(''role/delete'')')}" class="center">操作</th>
+												</tr>
+											</thead>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	<script class="invisible" type="text/javascript">
+		var options = {
+			rangePicker: false,
+			element: "#sample-table",
+			ajax: {
+				url: "role/list"
+			},
+			order: [0, "asc"],
+			columns: [
+				{  
+					"data" : "id",
+					"class" : "center",
+					"orderable": ["ase","desc"],
+					"render" : function(data, type, full, meta) {
+						return meta.row + 1 + meta.settings._iDisplayStart;;
+					}
+				},
+				{  
+					"data" : "roleName",
+					"class" : "center hidden-680",
+					"orderable": false
+				},
+				{  
+					"data" : "users",
+					"class" : "center hidden-680",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return data.length;
+					}
+				},
+				{  
+					"data" : "users",
+					"class" : "center hidden-680",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						var result = "";
+						if (data && data.length > 0) {
+							for (var i = 0; i < data.length; i++) {
+								if (i != 0)
+									result += ","
+								result += data[i].userName;
+							}
+						}
+						return result == "" ?"--":result;
+					}
+				},
+				{  
+					"data" : "roleDiscription",
+					"class" : "center",
+					"orderable": false
+				}
+            ]
+		};
+		var edit = "",edit0 = "",delet = "",delet0 = "";
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''r_details.html'')')}" class="invisible" type="text/javascript">
+		edit = function (data) {
+			return '<a class="blue frame" href="javascript:;" data-id="'+ data +'"><i class="fa fa-edit bigger-130"></i></a>';
+		};
+		edit0 = function (data) {
+			return '<a class="blue frame" href="javascript:;" data-id="'+ data +'">编辑</a>';
+		};
+		options.drawCallbacks = [
+            	{render: function (){
+            		$(".frame").on("click", function (){
+						layer.open({
+							type: 2,
+							title: "角色编辑",
+							shade: 0.6,
+							skin: "layui-layer-7 layui-layer-rim",
+							maxmin: true,
+							content: '/r_details_'+this.getAttribute("data-id")+'.html'
+						});
+					});
+            	}}
+            ];
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''role/delete'')')}" class="invisible" type="text/javascript">
+		delet = function (data) {
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="role/delete" href="javascript:;"><i class="fa fa-trash-o bigger-130"></i></a>';
+		};
+		delet0 = function (data) {
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="role/delete" href="javascript:;">删除</a>';
+		};
+	</script>
+	<script class="invisible" type="text/javascript">
+		if ((edit != "" && typeof edit == "function" && edit0 != "" && typeof edit0 == "function")
+			 || (delet != "" && typeof delet == "function" && delet0 != "" && typeof delet0 == "function"))
+			options.columns.push({  
+						"data" : "id",
+						"class" : "center",
+						"orderable": false,
+						"render" : function(data, type, full) {
+							return '<div class="visible-md visible-lg action-buttons">' + (edit==""?"":edit(data)) + (delet==""?"":delet(data)) + '</div>' + 
+									'<div class="hidden-md hidden-lg action-buttons">' +
+										'<div class="inline position-relative">' +
+											'<i class="fa fa-cog bigger-120 blue" data-toggle="dropdown"></i>' +
+			
+											'<ul class="dropdown-menu dropdown-only-icon dropdown-light pull-right dropdown-caret dropdown-close">' +
+												'<li>' + (edit0==""?"":edit0(data)) + '</li>' +
+												'<li>' + (delet0==""?"":delet0(data)) + '</li>' +
+											'</ul>' +
+										'</div>' +
+									'</div>';
+						}
+					});
+		
+		var paypal = new PayPal(options);
+		paypal.dataTab();
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''role/add'')')}" class="invisible" type="text/javascript">
+		$("#modal-add").ModalBox({
+			title: "添加角色",
+			url: "role/add",
+			forms: [
+				{title: "角色名　",name: "roleName",doc: "input",docType: "text"},
+				{title: "角色标识",name: "roleMark",doc: "input",docType: "text"},
+				{title: "角色描述",name: "roleDiscription",doc: "input",docType: "text"}
+			]
+		});
+		
+	</script>
+	
+</body>
+</html>

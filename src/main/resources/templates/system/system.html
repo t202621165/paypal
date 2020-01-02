@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('系统设置')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('系统管理','系统设置')"></div>
+
+				<div class="page-content">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="space"></div>
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li class="active">
+										<a data-toggle="tab" href="#basic-info">
+											<i class="green fa fa-address-card bigger-125"></i>
+											详情
+										</a>
+									</li>
+									
+									<li th:if="${#authorization.expression('hasAuthority(''system/edit'')')}">
+										<a data-toggle="tab" href="#edit-basic">
+											<i class="fa fa-pencil-square-o bigger-125"></i>
+											编辑
+										</a>
+									</li>
+								</ul>
+								<div class="tab-content no-border padding-24">
+									<div id="basic-info" class="tab-pane active">
+										<div class="row">
+											<div class="col-xs-12 col-sm-6">
+												<h4 class="blue">
+													<span class="middle">
+														<i class="fa fa-google-wallet"></i>
+														<a th:text="${system.webName} == null?'--':${system.webName}" data-rel="tooltip" 
+															data-placement="bottom" target="_domain" th:attr="data-original-title=${system.webName} == null?'点击前往':'点击前往'+${system.webName}" 
+															th:href="${system.domainName} == null?'javascript:;':${system.domainName}"></a>
+													</span>
+												</h4>
+												<div class="profile-user-info">
+													<div class="profile-info-row">
+														<div class="profile-info-name">网站域名</div>
+		
+														<div class="profile-info-value action-buttons">
+															<i class="fa fa-globe"></i> 
+															<span class="editable editable-click" 
+																th:text="${system.domainName} == null?'--':${system.domainName}"></span>
+															<a href='javascript:;' class="clipboard" data-rel='tooltip' data-placement='bottom' 
+																title='点击复制'> <i class='fa fa-clipboard copy'></i></a>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">接口域名</div>
+		
+														<div class="profile-info-value action-buttons">
+															<i class="fa fa-globe"></i> 
+															<span class="editable editable-click" 
+																th:text="${system.payDomainName} == null?'--':${system.payDomainName}"></span>
+															<a href='javascript:;' class="clipboard" data-rel='tooltip' data-placement='bottom' 
+																title='点击复制'> <i class='fa fa-clipboard copy'></i></a>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">客服电话</div>
+		
+														<div class="profile-info-value">
+															<i class="fa fa-phone"></i> <span class="editable" th:text="${system.servicePhone} == null?'--':${system.servicePhone}"></span>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">客服ＱＱ</div>
+		
+														<div class="profile-info-value">
+															<i class="fa fa-qq"></i> <span data-rel="tooltip" data-placement="bottom" title="点击联系客服" class="editable" th:if="${system.serviceQQ} != null">
+																<a target="service_qq" th:href="'http://wpa.qq.com/msgrd?v=3&uin='+${system.serviceQQ}+'&site=qq&menu=yes'" th:text="${system.serviceQQ}"></a>
+															</span>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">日志监控</div>
+		
+														<div class="profile-info-value">
+															<label>
+																<input th:value="${system.id}" type="checkbox" th:if="${#authorization.expression('hasAuthority(''system/edit'')')}" 
+																data-ajax-url="system/logState" class="ace ace-switch ace-switch-3 on-or-off" th:checked="${system.logState}">
+																<input th:value="${system.id}" type="checkbox" th:unless="${#authorization.expression('hasAuthority(''system/edit'')')}" 
+																class="ace ace-switch ace-switch-3" th:checked="${system.logState}" disabled>
+																<span class="lbl"></span>
+															</label>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">通道轮循</div>
+		
+														<div class="profile-info-value">
+															<label>
+																<input th:value="${system.id}" type="checkbox" th:if="${#authorization.expression('hasAuthority(''system/edit'')')}" 
+																data-ajax-url="system/routeState" class="ace ace-switch ace-switch-3 on-or-off" th:checked="${system.routeState}">
+																<input th:value="${system.id}" type="checkbox" th:unless="${#authorization.expression('hasAuthority(''system/edit'')')}" 
+																class="ace ace-switch ace-switch-3" th:checked="${system.routeState}" disabled>
+																<span class="lbl"></span>
+															</label>
+														</div>
+													</div>
+													
+													<div class="profile-info-row">
+														<div class="profile-info-name">风控范围</div>
+		
+														<div class="profile-info-value">
+															<label>
+																<input type="number" id="tailAmountScope" th:value="${system.tailAmountScope}" max="0.9" min="0.1" step="0.1" style="width:50px;">
+															</label>												
+															<label style="color:red">【风控金额范围 例如:设置为0.5 风控的金额范围在0.5到1之间】</label>
+														</div>
+													</div>
+													
+												</div>
+		
+											</div>
+											
+											<div class="widget-box transparent col-xs-12 col-sm-6">
+												<div class="widget-header widget-header-small">
+													<h4 class="smaller">
+														<i class="fa fa-user bigger-110"></i>
+														系统商户<small th:if="${merchant} == null">(未绑定)</small>
+													</h4>
+												</div>
+												<div class="space-6"></div>
+												<div class="profile-user-info profile-user-info-striped">
+													<div class="profile-info-row">
+														<div class="profile-info-name">昵　称</div>
+		
+														<div class="profile-info-value">
+															<span th:if="${merchant} != null" class="editable" th:text="${merchant.nickName}==null?'--':${merchant.nickName}"></span>
+															<span th:unless="${merchant} != null" class="editable">--</span>
+															<b th:if="${merchant} != null">
+																<span th:if="${merchant.certificationState}" class="label label-lg label-success arrowed">
+																	<i class="fa fa-id-card bigger-120"></i>
+																	已认证
+																</span>
+															<span th:unless="${merchant.certificationState}" class="label label-lg label-danger arrowed">
+																<i class="fa fa-warning bigger-120"></i>
+																未认证
+															</span>
+															</b>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">帐　号</div>
+		
+														<div class="profile-info-value">
+															<span th:if="${merchant} != null" class="editable editable-click">
+																<a th:href="'profile_'+${merchant.id}+'.html'" target="_profile" th:text="${merchant.account}==null?'--':${merchant.account}"></a>
+															</span>
+															<span th:unless="${merchant} != null" class="editable editable-click">--</span>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">邮　箱</div>
+		
+														<div class="profile-info-value">
+															<span th:if="${merchant} != null" class="editable" th:text="${merchant.email}==null?'--':${merchant.email}"></span>
+															<span th:unless="${merchant} != null" class="editable">--</span>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">注册时间</div>
+		
+														<div class="profile-info-value">
+															<span th:if="${merchant} != null" class="editable" th:text="${merchant.regDate}==null?'--':${merchant.regDate}"></span>
+															<span th:unless="${merchant} != null" class="editable">/-/-/ /:/:/</span>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">联系方式</div>
+		
+														<div class="profile-info-value">
+															<span th:if="${merchant} != null" class="editable" th:text="${merchant.telPhone}==null?'--':${merchant.telPhone}"></span>
+															<span th:unless="${merchant} != null" class="editable">--</span>
+														</div>
+													</div>
+		
+													<div class="profile-info-row">
+														<div class="profile-info-name">商户密钥</div>
+		
+														<div class="profile-info-value action-buttons">
+															<span th:if="${merchant} != null" class="editable" th:text="${merchant.merchantKey}==null?'--':${merchant.merchantKey}"></span>
+															<span th:unless="${merchant} != null" class="editable">--</span>
+															<a href='javascript:;' class="clipboard" data-rel='tooltip' data-placement='bottom' 
+																title='点击复制'> <i class='fa fa-clipboard copy'></i></a>
+														</div>
+													</div>
+												</div>
+		
+											</div>
+										</div>
+										<div class="hr hr-18 dotted hr-double"></div>
+										<div class="row">
+											<div class="col-xs-12">
+												<div class="widget-box transparent">
+													<div class="widget-header widget-header-small">
+														<h4 class="smaller">
+															<i class="fa fa-cc-paypal bigger-110"></i>
+															代付管理
+														</h4>
+														<button th:if="${#authorization.expression('hasAuthority(''payee/add'')')}" 
+															id="modal-add" data-toggle="modal" data-target="#modal-table" 
+															class="btn btn-app btn-primary btn-xs pull-right" style="height: 28px;">
+															<i class="fa fa-plus"></i>添加
+														</button>
+													</div>
+
+													<div class="widget-body">
+														<div class="tab-content no-border" style="padding: 12px 0px;">
+															<div class="table-responsive">
+																<table id="sample-table"
+																	class="table table-striped table-bordered table-hover">
+																	<thead>
+																		<tr>
+																			<th class="center"><i class="fa fa-hashtag"></i></th>
+																			<th class="center">名称</th>
+																			<th class="center">标识</th>
+																			<th class="center">帐号</th>
+																			<th class="center">付款备注</th>
+																			<th class="center">代付类型</th>
+																			<th th:if="${#authorization.expression('hasAuthority(''payee/edit'')')} 
+																			or ${#authorization.expression('hasAuthority(''payee/delete'')')}" class="center">操作</th>
+																		</tr>
+																	</thead>
+																</table>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									<div id="edit-basic" class="tab-pane" th:if="${#authorization.expression('hasAuthority(''system/edit'')')}">
+										<form  class="form-horizontal" id="info-form">
+											<div class="tab-content profile-edit-tab-content">
+												<h4 class="header blue bolder smaller">基本信息</h4>
+												
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-username">网站名称：</label>
+	
+													<div class="col-xs-5">
+														<span class="block input-icon input-icon-right">
+															<input type="hidden" name="id" th:value="${system.id}">
+															<input type="text" name="webName" class="form-control required" placeholder="网站名称" th:value="${system.webName}">
+															<i class="fa fa-registered"></i>
+														</span>
+													</div>
+												</div>
+	
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-first">网站域名：</label>
+	
+													<div class="col-xs-5">
+														<span class="block input-icon input-icon-right">
+															<input type="text" name="domainName" class="form-control required" placeholder="网站域名" th:value="${system.domainName}">
+															<i class="fa fa-globe"></i>
+														</span>
+													</div>
+												</div>
+	
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-first">接口域名：</label>
+	
+													<div class="col-xs-5">
+														<span class="block input-icon input-icon-right">
+															<input type="text" name="payDomainName" class="form-control required" placeholder="支付接口域名" th:value="${system.payDomainName}">
+															<i class="fa fa-globe"></i>
+														</span>
+													</div>
+												</div>
+	
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-first">客服电话：</label>
+	
+													<div class="col-xs-5">
+														<span class="block input-icon input-icon-right">
+															<input type="text" name="servicePhone" class="form-control required" placeholder="客服电话"  th:value="${system.servicePhone}">
+															<i class="fa fa-phone"></i>
+														</span>
+													</div>
+												</div>
+	
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-first">客服ＱＱ：</label>
+	
+													<div class="col-xs-5">
+														<span class="block input-icon input-icon-right">
+															<input type="text" name="serviceQQ" class="form-control required" placeholder="客服QQ"  th:value="${system.serviceQQ}">
+															<i class="fa fa-qq"></i>
+														</span>
+													</div>
+												</div>
+												
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-first">版权信息：</label>
+	
+													<div class="col-xs-5">
+														<span class="block input-icon input-icon-right">
+															<textarea class="form-control required" name="webCopyRight" rows="3" placeholder="网站底部版权信息"  th:text="${system.webCopyRight}"></textarea>
+															<i class="fa fa-copyright"></i>
+														</span>
+													</div>
+												</div>
+												
+												<h4 class="header blue bolder smaller">结算设置</h4>
+	
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-twitter">默认结算类型：</label>
+	
+													<div class="col-xs-5">
+														<label>
+															<input name="settleType" value="0" type="radio" class="ace" th:checked="${system.settleType} == 0?true:false">
+															<span class="lbl"> Ｔ０结算</span>
+														</label>
+														&nbsp;
+														<label class="padding-16">
+															<input name="settleType" value="1" type="radio" class="ace" th:checked="${system.settleType} == 1?true:false">
+															<span class="lbl"> Ｔ１结算</span>
+														</label>
+													</div>
+												</div>
+												
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-username">日结次数(Ｔ０)：</label>
+	
+													<div class="col-xs-5">
+														<input type="number" name="t0SettleCount" min="0" class="form-control required" placeholder="T0商户每天自主申请提现的次数" th:value="${system.t0SettleCount}">
+													</div>
+												</div>
+												
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-username">Ｔ０最小提现金额：</label>
+	
+													<div class="col-xs-5">
+														<input type="number" name="t0MinSettle" min="0" class="form-control required" placeholder="T0商户单笔最小提现金额" th:value="${system.t0MinSettle}">
+													</div>
+												</div>
+												
+												<div class="form-group">
+													<label class="col-xs-2 control-label no-padding-right" for="form-field-username">Ｔ１最小提现金额：</label>
+	
+													<div class="col-xs-5">
+														<input type="number" name="t1MinSettle" min="0" class="form-control required" placeholder="T1商户单笔最小提现金额" th:value="${system.t1MinSettle}">
+													</div>
+												</div>
+											</div>
+										</form>
+										<hr>
+										<button type="button" data-ajax-url="system/edit" data-nodraw="true" class="btn btn-primary btn-block info-save">保存</button>
+									</div>
+								</div>
+							</div>
+						</div><!-- /.col -->
+					</div><!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+	
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script class="invisible" type="text/javascript">
+		$.copyData();
+		var options = {
+			rangePicker: false,
+			element: "#sample-table",
+			ajax: {
+				url: "payee/list"
+			},
+			order: [0, "desc"],
+			columns: [
+				{  
+					"data" : "isDefault",
+					"class" : "center",
+					"orderable": ["desc","desc"],
+					"render" : function(data, type, full) {
+						return '<label class="is-default"><input name="isDefault" value="'+full.id+'" type="radio" class="ace" '+(data?"checked":"")+'><span class="lbl"></span></label>';
+					}
+				},
+				{  
+					"data" : "name",
+					"class" : "center",
+					"orderable": false
+				},
+				{  
+					"data" : "mark",
+					"class" : "center hidden-680",
+					"orderable": false
+				},
+				{  
+					"data" : "account",
+					"class" : "center word-break-normal",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return data;
+					}
+				},
+				{  
+					"data" : "remark",
+					"class" : "center word-break-normal",
+					"orderable": false
+				},
+				{  
+					"data" : "type",
+					"class" : "center word-break-normal",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						if (data)
+							return '<img src="assets/images/mark/alipay.png">';
+						return '<img src="assets/images/mark/ebank.png">';
+					}
+				}
+            ]
+		};
+		var edit = "",delet = "";
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''payee/edit'')')}" class="invisible" type="text/javascript">
+		options.rowCallbacks = [
+            	{render: function (row, data){
+            		mapping().editPayee(row ,data);
+            	}}
+            ];
+		edit = '<a class="blue btn-edit" data-toggle="modal" data-target="#modal-table" href=""><i class="fa fa-edit bigger-130"></i></a>';
+		options.drawCallbacks = [
+            	{render: function (){
+					$(".is-default").on("click", function (){
+						var id = $(this).find("input[name=isDefault]").val();
+						layer.confirm('\u662F\u5426\u8BBE\u7F6E\u5F53\u524D\u901A\u9053\u4E3A\u5546\u6237\u4EE3\u4ED8\u9ED8\u8BA4\u901A\u9053\uFF1F', {
+							title: "<li class='fa fa-question-circle-o bigger-120 red'></li> \u63D0\u793A",
+							btn: ['\u786E\u5B9A', '\u53D6\u6D88'] //\u6309\u94AE
+						}, function(){
+							$.postAjax({
+								error: false,
+								success: false,
+								url: "payee/default",
+								data: {id: id}
+							});
+						});
+					});
+            	}}
+            ];
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''payee/delete'')')}" class="invisible" type="text/javascript">
+		delet = function (data){
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="payee/delete" href="javascript:;"><i class="fa fa-trash-o bigger-130"></i></a>'
+		};
+	</script>
+	<script class="invisible" type="text/javascript">
+		$(function (){
+			if (edit != "" || delet != "") {
+				options.columns.push({  
+						"data" : "id",
+						"class" : "center word-break-normal",
+						"orderable": false,
+						"render" : function(data, type, full) {
+							return '<div class="action-buttons">' + edit + (delet==""?"":delet(data)) + '</div>';
+						}
+					});
+			}
+			var paypal = new PayPal(options);
+			paypal.dataTab();
+		});
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''payee/add'')')}" class="invisible" type="text/javascript">
+		$("#modal-add").ModalBox({
+			title: "添加代付通道",
+			url: "payee/add",
+			forms: [
+				{title: "代付名称",name: "name",doc: "input",docType: "text"},
+				{title: "唯一标识",name: "mark",doc: "input",docType: "text"},
+				{title: "付款备注",name: "remark",doc: "input",docType: "text",value: "爱玩在线转入"},
+				{title: "代付类型",name: "type",doc: "select",callback: function (){
+					return "<option value=''>--请选择--</option>" + 
+							"<option value='true'>支付宝</option>" + 
+							"<option value='false'>银联</option>";
+				}}
+			]
+		});
+	</script>
+	<script>
+		$("#tailAmountScope").change(function() {
+			$.ajax({
+				url:"system/scope",
+				type:"post",
+				data:{"scope":$("#tailAmountScope").val()},
+				success:function(data){
+					layer.msg(data.msg);
+				}
+			});
+			
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('权限管理')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('系统设置','权限管理')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class='widget-box-overlay none'><i class='fa fa-spinner fa-spin fa-3x fa-fw white'></i></div>
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="widget-box">
+								<div class="widget-header header-color-blue2">
+									<h4 class="lighter smaller">系统权限管理</h4>
+									<div th:if="${!hasAllResource}" class="action-buttons pull-right" style="margin: 5px;">
+										<a class="white" id="refresh" href="javascript:;" 
+											data-rel='tooltip' data-placement='left' title='点击恢复权限'>
+											<i class="fa fa-refresh bigger-150"></i></a>
+									</div>
+								</div>
+
+								<div class="widget-body">
+									<div class="widget-main padding-8">
+										<div class="dd dd-draghandle">
+											<ol class="dd-list" th:if="${resources} != null">
+												<li class="dd-item dd2-item dd-collapsed" th:each="parent:${resources}" 
+													th:attr="data-id=${parent.id}">
+													<div class="dd-handle dd2-handle">
+														<i class="normal-icon fa blue bigger-130" 
+															th:classappend="${parent.resourceIcon}"></i>
+			
+														<i class="drag-icon fa fa-arrows bigger-125"></i>
+													</div>
+													<div class="dd2-content" th:text="${parent.resourceName}"></div>
+													<ol class="dd-list"  th:if="${not #lists.isEmpty(parent.childern)}">
+														<li class="dd-item dd2-item" th:each="child:${parent.childern}" 
+															th:attr="data-id=${child.id},parent-id=${parent.id}">
+															<div class="dd-handle dd2-handle">
+																<i class="normal-icon fa orange bigger-130" 
+																	th:classappend="${child.resourceIcon}"></i>
+
+																<i class="drag-icon fa fa-arrows bigger-125"></i>
+															</div>
+															<div class="dd2-content" th:text="${child.resourceName}"></div>
+															<ol class="dd-list"  th:if="${not #lists.isEmpty(child.childern)}" style="display: none;">
+																<li class="dd-item dd2-item" th:each="child2:${child.childern}" 
+																	th:attr="data-id=${child2.id},parent-id=${child.id}">
+																	<div class="dd-handle dd2-handle">
+																		<i class="normal-icon fa orange bigger-130" 
+																			th:classappend="${child2.resourceIcon}"></i>
+		
+																		<i class="drag-icon fa fa-arrows bigger-125"></i>
+																	</div>
+																	<div class="dd2-content" th:text="${child2.resourceName}"></div>
+																</li>
+															</ol>
+														</li>
+													</ol>
+												</li>
+											</ol>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+	
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- nestable scripts -->
+	<div th:replace="common/common_js :: nestable"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<script class="invisible" type="text/javascript">
+		$('.dd').nestable();
+		$("#refresh").on("click", function (){
+			$.postAjax({
+				error: true,
+				success: true,
+				flash: true,
+				data: {},
+				url: "resource/refresh",
+				before: function (){
+					$("#refresh").attr("disabled", true);
+					$(".widget-box-overlay").removeClass("none");
+				},
+				callback: function (){
+					$("#refresh").attr("disabled", false);
+					$(".widget-box-overlay").addClass("none");
+				}
+			});
+		});
+	</script>
+	
+</body>
+</html>

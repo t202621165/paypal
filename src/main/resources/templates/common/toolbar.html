@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>toolbar</title>
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+	<div th:fragment="tool">
+		<div class="ace-settings-container" id="ace-settings-container">
+			<div class="btn btn-app btn-xs btn-warning ace-settings-btn"
+				id="ace-settings-btn" style="padding: 7px;">
+				<i class="fa fa-gear bigger-150"></i>
+			</div>
+
+			<div class="ace-settings-box" id="ace-settings-box">
+				<div>
+					<div class="pull-left">
+						<select id="skin-colorpicker" class="hide">
+							<option data-skin="default" value="#3593D2">#3593D2</option>
+							<option data-skin="skin-1" value="#222A2D">#222A2D</option>
+							<option data-skin="skin-2" value="#07599A">#07599A</option>
+							<option data-skin="skin-3" value="#D0D0D0">#D0D0D0</option>
+						</select>
+					</div>
+					<span>&nbsp; 选择皮肤</span>
+				</div>
+
+				<div>
+					<input type="checkbox" class="ace ace-checkbox-2"
+						id="ace-settings-add-container" /> <label class="lbl"
+						for="ace-settings-add-container"> 切换窄屏 <b></b>
+					</label>
+				</div>
+			</div>
+		</div>
+		<!-- /#ace-settings-container -->
+		<a href="javascript:;" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse" style="position: fixed;">
+			<i class="fa fa-angle-double-up icon-only bigger-110"></i>
+		</a>
+		
+		<!-- #context-menu -->
+		<div class="context-menu none" id="context-menu">
+			<ul>
+				<li th:if="${#authorization.expression('hasAuthority(''index.html'')')}">
+					<a href="/index.html">
+						<span class="fa fa-home"></span>
+						<span> 系统首页</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:;" onclick="window.location.reload()">
+						<span class="fa fa-refresh"></span>
+						<span> 刷新</span>
+					</a>
+				</li>
+				<li th:unless="${#httpServletRequest.requestURI} == '/order.html'" th:if="${#authorization.expression('hasAuthority(''order.html'')')}">
+					<a href="order.html">
+						<span class="fa fa-reorder"></span>
+						<span> 订单列表</span>
+					</a>
+				</li>
+				<li th:unless="${#httpServletRequest.requestURI} == '/order.html'" th:if="${#authorization.expression('hasAuthority(''order.html'')')}">
+					<a href="javascript:;" id="webSearch">
+						<span class="fa fa-search"></span>
+						<span> 搜索</span>
+					</a>
+				</li>
+				<li th:unless="${#httpServletRequest.requestURI} == '/system.html'" th:if="${#authorization.expression('hasAuthority(''system.html'')')}">
+					<a href="system.html">
+						<span class="fa fa-gear"></span>
+						<span> 系统设置</span>
+					</a>
+				</li>
+				<li>
+					<a href="javascript:;">
+						<span class="fa fa-info-circle"></span>
+						<span> 关于</span>
+					</a>
+				</li>
+				<li>
+					<form id="logout" action="logout" method="post">
+						<a id="btn-logout" href="javascript:;" class="red">
+							<span class="fa fa-power-off"></span>
+							<span> 退出登录</span>
+						</a>
+					</form>
+				</li>
+			</ul>
+		</div>
+		<!-- /#context-menu -->
+		<script id="container" type="text/javascript" th:inline="javascript">
+			var container = function (cname) {
+				 var name = cname + "=";
+				 var ca = document.cookie.split(';');
+				 for(var i=0; i<ca.length; i++) {
+				  var c = ca[i];
+				  while (c.charAt(0)==' ') c = c.substring(1);
+				  if (c.indexOf(name) != -1) 
+					  return c.substring(name.length, c.length);
+				 }
+				 return "";
+			}("ACE_CONTAINER");
+			if (container === "true") {
+				$("#main-container").addClass("container");
+				$("#navbar-container").addClass("container");
+				$("#ace-settings-add-container").attr("checked", true);
+			}
+			$("script #container").remove();
+		</script>
+	</div>
+	
+	<div th:fragment="breadcrumbs(level_one,level_two)">
+		<a class="menu-toggler" id="menu-toggler" href="javascript:;">
+			 菜&nbsp;单<span class="menu-text"></span>
+		</a>
+		<div class="breadcrumbs" id="breadcrumbs">
+			<script type="text/javascript">
+				try {
+					ace.settings.check('breadcrumbs', 'fixed')
+				} catch (e) {}
+			</script>
+	
+			<ul class="breadcrumb">
+				<li><i class="icon-home home-icon"></i> <a href="index.html">首页</a></li>
+				<li th:if="${level_one} != null"><a href="javascript:;" th:text="${level_one}">#</a></li>
+				<li class="active" th:text="${level_two}">#</li>
+			</ul>
+			<!-- .breadcrumb -->
+	
+		</div>
+		
+		<div id="dialog-confirm" class="hide">
+			<div id="confirm-content" class="alert alert-info bigger-110 hide">
+				当前操作可能导致数据无法恢复。
+			</div>
+
+			<div class="space-6"></div>
+
+			<p class="bigger-110 bolder center grey">
+				<i class="fa fa-hand-o-right blue bigger-120"></i>
+				是否确定?
+			</p>
+		</div><!-- #dialog-confirm -->
+	</div>
+	
+	<div th:fragment="modal" >
+		<div id="modal-table" class="modal fade" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+						<h4 class="modal-title">&nbsp;</h4>
+					</div>
+					<div class="modal-body">
+						<form method="post" class="form-horizontal" role="form" id="modal-form"></form>
+					</div>
+					<div class="modal-footer no-margin-top">
+						<button class="btn btn-sm btn-danger" data-dismiss="modal"><i class="fa fa-remove"></i>关闭</button>
+						<button class="btn btn-sm btn-primary" id="modal-save"><i class="fa fa-check"></i>保存</button>
+					</div>
+				</div>
+			</div>
+		</div><!-- PAGE CONTENT ENDS -->
+	</div>
+</body>
+</html>

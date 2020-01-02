@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+		xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<title>侧边栏</title>
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+	<div th:fragment="menu" class="sidebar" id="sidebar">
+		<script type="text/javascript">
+			try {
+				ace.settings.check('sidebar', 'fixed')
+			} catch (e) {}
+		</script>
+
+		<div class="sidebar-shortcuts" id="sidebar-shortcuts">
+			<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+				<button class="btn btn-success"><i class="icon-signal"></i></button>
+
+				<button class="btn btn-info"><i class="icon-pencil"></i></button>
+
+				<button class="btn btn-warning"><i class="icon-group"></i></button>
+
+				<button class="btn btn-danger"><i class="icon-cogs"></i></button>
+			</div>
+
+			<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+				<span class="btn btn-success"></span> <span class="btn btn-info"></span>
+
+				<span class="btn btn-warning"></span> <span class="btn btn-danger"></span>
+			</div>
+		</div>
+		<!-- #sidebar-shortcuts -->
+
+		<ul class="nav nav-list" >
+			<li th:each="item:${#authentication.principal.resources}" 
+				th:if="${#authorization.expression('hasAuthority(#vars.item.resourceMark)')}">
+				<a href="index.html" th:href="${item.resourceMark} eq 'index.html' ?'/index.html':'javascritp:;'" 
+					th:class="${item.resourceMark} eq 'index.html' ?'':dropdown-toggle">
+					<i th:class="${'fa ' + item.resourceIcon}"></i>
+					<span class="menu-text" th:text="${item.resourceName}">首　　页</span>
+					<b th:if="${item.resourceMark} ne 'index.html'" class="arrow fa fa-angle-down"></b>
+				</a>
+
+				<ul class="submenu" th:if="${!#lists.isEmpty(item.childern)}">
+					<li th:each="child:${item.childern}" 
+						th:if="${#authorization.expression('hasAuthority(#vars.child.resourceMark)')}">
+						<a href="javascript:;" th:href="${'/' + child.resourceMark}"> 
+							<i th:class="${'fa ' + child.resourceIcon}"></i> 
+							<span th:text="${child.resourceName}"></span>
+						</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<!-- /.nav-list -->
+		<script type="text/javascript">
+			var path = window.location.pathname;
+			if (/^\/profile.*\.html$/.test(path)) {
+				path = "/merchant.html";
+			}
+			if (/^\/g_details.*\.html$/.test(path)) {
+				path = "/gallery.html";
+			}
+			if (/^\/reply_details.*\.html$/.test(path)) {
+				path = "/reply.html";
+			}
+			if (/^\/r_details.*\.html$/.test(path)) {
+				path = "/role.html";
+			}
+			var $a = document.querySelector("a[href='"+path+"']");
+			if ($a) {
+				$a.parentNode.className = "active";
+				if (path != "/index.html") {
+					$a.parentNode.parentNode.parentNode.className = "active open";
+				}
+			}
+		</script>
+		<div class="sidebar-collapse" id="sidebar-collapse">
+			<i class="icon-double-angle-left fa fa-angle-double-left" data-icon1="fa fa-angle-double-left" data-icon2="fa fa-angle-double-right"></i>
+		</div>
+
+		<script type="text/javascript">
+			try {
+				ace.settings.check('sidebar', 'collapsed')
+			} catch (e) {}
+		</script>
+	</div>
+</body>
+</html>

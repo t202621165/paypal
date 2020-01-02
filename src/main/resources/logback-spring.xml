@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%-20(%d{yyyy-MM-dd HH:mm:ss} [%thread]) %-5level %logger{80} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 存放日志文件相对路径，在jar包同级下创建一个logs-->
+        <file>logs/iwanol.log</file>
+        <!-- 每天将日志文件压缩成一个压缩文件-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/nfplus.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%-20(%d{yyyy-MM-dd HH:mm:ss} [%thread]) %-5level %logger{80} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <logger name="java.sql.PreparedStatement" level="INFO" />
+
+	<!-- 监视等级为INFO-->
+    <root level="INFO">
+        <appender-ref ref="stdout" />
+        <appender-ref ref="file" />
+    </root>
+</configuration>

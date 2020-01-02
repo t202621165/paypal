@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('批付详情')"></head>
+<body>
+	<div class="main-container" id="main-container">
+
+		<div class="main-container-inner">
+
+			<div class="page-content searchForm">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="widget-box">
+							<div class="widget-header">
+								<h4>结算查询</h4>
+								<span class="widget-toolbar">
+									<a href="javascript:;">
+										<i class="fa fa-refresh"></i>
+									</a>
+
+									<a href="javascript:;" data-action="collapse">
+										<i class="fa fa-chevron-up"></i>
+									</a>
+								</span>
+							</div>
+							<div class="widget-body">
+								<div class="widget-main">
+									<form id="searchForm">
+										<div class="row">
+											<input type="hidden" name="state" value="1">
+											<input type="hidden" name="replyId" th:value="${replyId}">
+											<div class="col-xs-4">
+												<div class="input-group">
+													<span class="input-group-addon">流水号</span>
+													<input name="serialNumber" type="text" class="form-control search-query" placeholder="结算流水号">
+												</div>
+											</div>
+											<div class="col-xs-4">
+												<div class="input-group">
+													<span class="input-group-addon">商户</span>
+													<input name="merchantId" type="text" class="form-control search-query" placeholder="请输入商户ID">
+													<span class="input-group-btn">
+														<button type="button" class="btn btn-primary btn-sm btn-query">查询</button>
+													</span>
+												</div>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				
+					<div class="col-xs-12">
+						<div class="hr hr-18 dotted hr-double"></div>
+						<div class="tabbable">
+							<div class="tab-content no-border" style="padding: 12px 0px;">
+								<div class="tab-pane in active">
+									<table id="sample-table"
+										class="table table-striped table-bordered table-hover">
+										<thead>
+											<tr>
+												<th class="center">申请时间</th>
+												<th class="center">流水号</th>
+												<th class="center">商户<span class="tab-p-foot none">/收款人</span></th>
+												<th class="center">收款银行</th>
+												<th class="center">收款帐号</th>
+												<th class="center">金额<span class="tab-p-foot none">/手续费</span></th>
+												<th class="center">手续费</th>
+												<th class="center">描述</th>
+												<th class="center">完成时间</th>
+												<th class="center">状态</th>
+											</tr>
+										</thead>
+
+									</table>
+								</div>
+								
+							</div>
+						</div>
+
+					</div>
+					<!-- /.col -->
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.page-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script class="invisible" type="text/javascript">
+		var options = {
+			rangePicker: false,
+			element: "#sample-table",
+			ajax: {
+				url: "funds/settlement"
+			},
+			order: [0, "desc"],
+			columns: [
+				{  
+					"data" : "applyDate",
+					"class" : "center hidden-768",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						var arr = data.split(" ");
+						return "<p class='tab-p-heard'>"+arr[0]+"</p><p class='tab-p-foot'>"+arr[1]+"</p>";
+					}
+				},
+				{  
+					"data" : "serialNumber",
+					"class" : "center hidden-1080",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return $.stringEllipsis(data,5,5);
+					}
+				},
+				{  
+					"data" : "merchantId",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return "<p class='tab-p-heard'>"+data+"</p><p class='tab-p-foot'>"+full.realName+"</p>";
+					}
+				},
+				{  
+					"data" : "bankName",
+					"orderable": false,
+					"class" : "center hidden-980",
+					"orderSequence": ["desc","asc"]
+				},
+				{  
+					"data" : "bankNumber",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return '<div class="action-buttons" style="position: relative;">' + 
+									'<span>'+data+'</span>' + 
+									'<a href="javascript:;" class="clipboard" data-rel="tooltip" data-placement="bottom" ' + 
+										'title="点击复制"> <i class="fa fa-clipboard copy"></i></a>' + 
+								'</div>';
+					}
+				},
+				{  
+					"data" : "amount",
+					"class" : "center green",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<p class='tab-p-heard green'><i class='fa fa-rmb'></i> "+ $.toThousands(data)+
+								"</p><p class='tab-p-foot none pnone'><i class='fa fa-rmb'></i> "+ $.toThousands(full.cost)+"</p>";
+					}
+				},
+				{  
+					"data" : "cost",
+					"class" : "center hidden-1080",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return "<i class='fa fa-rmb'></i> "+ $.toThousands(data);
+					}
+				},
+				{  
+					"data" : "discription",
+					"class" : "center hidden-680",
+					"orderable": false
+				},
+				{  
+					"data" : "complateDate",
+					"class" : "center hidden-1080",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						if (data == undefined)
+							return"<p class='tab-p-heard'>--</p><p class='tab-p-foot'>--</p>";
+						var arr = data.split(" ");
+						return "<p class='tab-p-heard'>"+arr[0]+"</p><p class='tab-p-foot'>"+arr[1]+"</p>";
+					}
+				},
+				{  
+					"data" : "replyState",
+					"class" : "center hidden-680",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						var result = "";
+						if (data) {
+							result = '<span class="label label-success arrowed-in-right arrowed">已付款</span>';
+						}else{
+							result = '<span class="label label-primary arrowed-in-right arrowed">付款中</span>';
+						}
+						return result;
+					}
+				}
+            ],
+            drawCallbacks: [
+            	{render: function (jsonData){
+					$.copyData();
+            		if (typeof jsonData.sumData != "undefined"){
+						var sumData = jsonData.sumData;
+						var _html = '<div class="message-infobar" id="id-message-infobar">' + 
+										'<b>总计：</b>' + 
+										'<b class="blue">金额_：</b>' + 
+										'<b class="green">'+ $.toThousands(sumData[0].totalAmount) +'</b>&nbsp;' + 
+										'<b class="blue">手续费_：</b>' + 
+										'<b class="green">'+ $.toThousands(sumData[0].totalCost) +'</b>' + 
+									'</div>';
+						$(".total-record").empty().append(_html);
+					}
+            	}}
+            ]
+		};
+		var paypal = new PayPal(options);
+		paypal.paging();
+	</script>
+	
+</body>
+</html>

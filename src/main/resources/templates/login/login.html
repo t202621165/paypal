@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+
+<head th:replace="common/header :: commonHeader('总管理后台-登录')"></head>
+<body class="login-layout" onload="document.getElementById('userName').focus()" 
+	onkeydown="(function(){var event = arguments.callee.caller.arguments[0] || 
+		window.event;if(event.keyCode == 13)$('#login').click();}).call(this);">
+	<div class="main-container">
+		<div class="main-content">
+			<div class="row">
+				<div class="col-sm-10 col-sm-offset-1">
+					<div class="login-container">
+						<div class="center">
+							<h1>
+								<i class="fa fa-paypal green"></i>
+								<span class="red" th:text="${system.webName}==null?'':${system.webName}"></span>
+								<span class="white">总管理后台</span>
+							</h1>
+						</div>
+						<div th:if="${loginError}">
+							<p class="icon-leaf green" th:text="${errorMsg}"></p>
+						</div>
+						<div class="space-6"></div>
+
+						<div class="position-relative">
+							<div id="login-box"
+								class="login-box visible widget-box no-border">
+								<div class="widget-body">
+									<div class="widget-main">
+										<h4 class="header blue lighter bigger">
+											<i class="fa fa-handshake-o green"></i> 欢迎登录总管理后台！
+										</h4>
+										<div class="space-6"></div>
+										<form id="loginForm" th:action="@{/login}" th:method="post">
+											<fieldset>
+												<label class="block clearfix">
+													<span class="block input-icon input-icon-right">
+														<input required type="text" class="form-control" id="userName" name="username" placeholder="用户名" />
+														<i class="fa fa-user" style="padding: 3px;"></i>
+													</span>
+												</label>
+												<label class="block clearfix">
+													<span class="block input-icon input-icon-right">
+														<input required type="password" class="form-control" id="passWord" name="password" placeholder="密码" />
+														<i class="fa fa-lock" style="padding: 3px;"></i>
+													</span>
+												</label>
+
+												<div class="space"></div>
+
+												<div class="clearfix">
+													<label class="inline">
+														<input type="checkbox" name="remember-me" value="true" class="ace" />
+														<span class="lbl"> 记住我 ?</span>
+													</label>
+
+													<button type="button" id="login" class="width-35 pull-right btn btn-sm btn-primary">
+														<i class="icon-key"></i> 登录
+													</button>
+												</div>
+												<div class="space-4"></div>
+											</fieldset>
+										</form>
+
+									</div>
+									<!-- /widget-main -->
+
+									<div class="toolbar clearfix">
+										<div>
+											<a th:if="${system.domainName} != null" th:href="${system.domainName}" target="_blank" class="forgot-password-link" >
+												<i class="fa fa-mail-reply"></i> <span th:text="${system.webName}"></span>
+											</a>
+										</div>
+
+										<div>
+											<a href="javascript:;" class="user-signup-link"> 
+												联系我们 <i class="fa fa-mail-forward"></i>
+											</a>
+										</div>
+									</div>
+								</div>
+								<!-- /widget-body -->
+							</div>
+							<!-- /login-box -->
+						</div>
+						<!-- /position-relative -->
+					</div>
+				</div>
+				<!-- /.col -->
+			</div>
+			<!-- /.row -->
+		</div>
+	</div>
+	<!-- /.main-container -->
+
+	<!-- basic scripts -->
+
+	<script th:src="@{assets/js/layer/layer.js}"></script>
+
+	<script type="text/javascript" th:inline="javascript">
+		var header = [[${_csrf.headerName}]];
+		var token = [[${_csrf.token}]];
+		$(document).ajaxSend(function(e, xhr, options){
+			xhr.setRequestHeader(header, token);
+		});
+		if ("ontouchend" in document) document.write("<script th:src='@{/assets/js/jquery.mobile.custom.min.js}'>" + "<" + "/script>");
+		$("#login").on("click", function (){
+			var requires = $("input:required");
+			var data = {};
+			for (var i = 0; i < requires.length; i++) {
+				var require = requires[i];
+				var _value = require.value;
+				if (!_value) {
+					require.focus();
+					var place = require.getAttribute("placeholder");
+					if (!place)
+						place = "";
+					layer.msg("<li class='fa fa-close'></li> "+place+"\u4e0d\u80fd\u4e3a\u7a7a\uff01",
+					{offset: "120px",time: 800,skin: "layui-layer-error"});
+					return;
+				}
+				var _id = require.getAttribute("id");
+				data[_id] = _value;
+			}
+			$.ajax({
+				url: "/user/login",
+				type: "POST",
+				data: {
+					"userName":$("#userName").val(),
+					"passWord":$("#passWord").val(),
+				},
+				success: function(data) {
+					if(data.code == '200'){						
+						window.location.href= data.url;
+					}else if(data.code == '401'){
+						layer.msg(data.msg,{offset: "120px",time: 2000,skin: "layui-layer-error"});
+					}
+				},		
+			});
+		});
+	</script>
+
+	<div id="footer" th:if="${system.webCopyRight} != null"><p th:text="${system.webCopyRight}"></p></div>
+</body>
+</html>
+

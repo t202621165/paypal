@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('偏重业务')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+	
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+		
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+			
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('商户管理','偏重业务')"></div>
+				
+				<div class="page-content searchForm">
+					<div class="row">
+					
+					</div><!-- /.row -->
+				</div><!-- /.page-content -->
+			</div><!-- /.main-content -->
+			
+			
+		</div><!-- /.main-container-inner -->
+	</div><!-- /.main-container -->
+	
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+	
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+</body>
+</html>

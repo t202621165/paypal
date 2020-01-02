@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="common/header :: commonHeader('首页')"></head>
+
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs(null,'控制台')"></div>
+
+				<div class="page-content">
+					<div class="page-header">
+						<h1>
+							控制台 <small> <i class="icon-double-angle-right"></i> 查看</small>
+						</h1>
+					</div>
+					<!-- /.page-header -->
+
+					<div class="row">
+						<div class="col-xs-12">
+							<!-- PAGE CONTENT BEGINS -->
+
+							<div class="alert alert-block alert-success">
+								<button type="button" class="close" data-dismiss="alert">
+									<i class="fa fa-times"></i>
+								</button>
+
+								<i class="fa fa-check green"></i> 欢迎使用 <strong class="green">爱玩在线后台管理系统 ！</strong>
+							</div>
+
+							<div class="row">
+								<div class="space-6"></div>
+
+								<div class="col-sm-5 infobox-container">
+									<div class="infobox infobox-green  ">
+										<div class="infobox-icon">
+											<i class="fa fa-cny"></i>
+										</div>
+
+										<div class="infobox-data">
+											<span class="infobox-data-number" th:text="${data}==null?0:${data.seriesDatas[0][data.seriesDatas[0].size()-1]}">0.00</span>
+											<div class="infobox-content">支付金额(元)</div>
+										</div>
+									</div>
+
+									<div class="infobox infobox-blue  ">
+										<div class="infobox-icon">
+											<i class="fa fa-cny"></i>
+										</div>
+
+										<div class="infobox-data">
+											<span class="infobox-data-number" th:text="${data}==null?0:${data.seriesDatas[1][data.seriesDatas[1].size()-1]}">0.00</span>
+											<div class="infobox-content">商户利润(元)</div>
+										</div>
+									</div>
+
+									<div class="infobox infobox-pink  ">
+										<div class="infobox-icon">
+											<i class="fa fa-cny"></i>
+										</div>
+
+										<div class="infobox-data">
+											<span class="infobox-data-number" th:text="${data}==null?0:${data.seriesDatas[2][data.seriesDatas[2].size()-1]}">0.00</span>
+											<div class="infobox-content">平台利润(元)</div>
+										</div>
+									</div>
+
+									<div class="infobox infobox-red  ">
+										<div class="infobox-icon">
+											<i class="fa fa-history"></i>
+										</div>
+
+										<div class="infobox-data">
+											<span class="infobox-data-number" th:text="${waitCount} == null?0:${waitCount}">0</span>
+											<div class="infobox-content">待发送(笔)</div>
+										</div>
+									</div>
+
+									<div class="space-6"></div>
+								</div>
+
+								<div class="vspace-sm"></div>
+
+								<div class="col-sm-7">
+									<div class="widget-box">
+										<div
+											class="widget-header widget-header-flat widget-header-small">
+											<h5>
+												<i class="icon-signal"></i> 注册商户
+											</h5>
+										</div>
+
+										<div class="widget-body">
+											<div class="widget-main">
+												<div id="piechart-placeholder"></div>
+
+												<div class="hr hr8 hr-double"></div>
+
+												<div class="clearfix">
+													<div class="grid3">
+														<span class="grey"> <i
+															class="icon-facebook-sign icon-2x blue"></i> &nbsp; 商户个数
+														</span>
+														<h4 class="bigger pull-right" th:text="${merchantVo.totalCount}">0</h4>
+													</div>
+
+													<div class="grid3">
+														<span class="grey"> <i
+															class="icon-twitter-sign icon-2x purple"></i> &nbsp;
+															未激活
+														</span>
+														<h4 class="bigger pull-right" th:text="${merchantVo.notActiveCount}">0</h4>
+													</div>
+
+													<div class="grid3">
+														<span class="grey"> <i
+															class="icon-pinterest-sign icon-2x red"></i> &nbsp; 支付关闭
+														</span>
+														<h4 class="bigger pull-right" th:text="${merchantVo.closeCount}">0</h4>
+													</div>
+												</div>
+											</div>
+											<!-- /widget-main -->
+										</div>
+										<!-- /widget-body -->
+									</div>
+									<!-- /widget-box -->
+								</div>
+								<!-- /span -->
+							</div>
+							<!-- /row -->
+
+							<div class="hr hr32 hr-dotted"></div>
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="widget-header widget-header-flat radius-top">
+										<h4 class="lighter">
+											<i class="fa fa-area-chart orange"></i> 日交易统计
+										</h4>
+										<div class="widget-toolbar no-border">
+											<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
+												近两周 <i class="icon-angle-down icon-on-right bigger-110"></i>
+											</button>
+
+											<ul th:if="false" class="dropdown-menu pull-right dropdown-125 dropdown-lighter dropdown-caret">
+												<li class="active">
+													<a href="#" class="blue"> <i class="icon-caret-right bigger-110">&nbsp;</i> 近两周</a>
+												</li>
+
+												<li><a href="#"> <i class="icon-caret-right bigger-110 invisible">&nbsp;</i>
+														本周
+												</a></li>
+
+												<li><a href="#"> <i class="icon-caret-right bigger-110 invisible">&nbsp;</i>
+														本月
+												</a></li>
+
+												<li><a href="#"> <i class="icon-caret-right bigger-110 invisible">&nbsp;</i>
+														上月
+												</a></li>
+											</ul>
+										</div>
+									</div>
+									<div class="widget-body radius-bottom" id="main" style="height: 280px;"></div>
+								</div>
+							</div>
+							<div class="hr hr32 hr-dotted"></div>
+							<div class="row">
+								<div class="col-xs-12">
+									<div class="widget-header widget-header-flat radius-top">
+										<h4 class="lighter">
+											<i class="fa fa-line-chart"></i> 产品交易统计
+										</h4>
+										<div class="widget-toolbar no-border">
+											<button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
+												今日 <i class="icon-angle-down icon-on-right bigger-110"></i>
+											</button>
+
+											<ul th:if="false" class="dropdown-menu pull-right dropdown-125 dropdown-lighter dropdown-caret">
+												<li class="active"><a href="#" class="blue"> <i class="icon-caret-right bigger-110">&nbsp;</i> 本周
+												</a></li>
+
+												<li><a href="#"> <i class="icon-caret-right bigger-110 invisible">&nbsp;</i>
+														昨日
+												</a></li>
+
+												<li><a href="#"> <i class="icon-caret-right bigger-110 invisible">&nbsp;</i>
+														本周
+												</a></li>
+
+												<li><a href="#"> <i class="icon-caret-right bigger-110 invisible">&nbsp;</i>
+														本月
+												</a></li>
+											</ul>
+										</div>
+									</div>
+									<div class="widget-body radius-bottom" id="product_main" style="height: 280px;"></div>
+								</div>
+							</div>
+							<div class="hr hr32 hr-dotted"></div>
+
+							<!-- /row -->
+
+							<!-- PAGE CONTENT ENDS -->
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<div th:replace="common/common_js :: dist_echarts"></div>
+
+	<script type="text/javascript">
+		require.config({paths: {echarts: './assets/dist'}});
+		
+	</script>
+	<script type="text/javascript" th:if="${data} != null" th:inline="javascript">
+		$(function (){
+			var data = [[${data}]];
+			$.orderEcharts(data);
+		});
+	</script>
+	<script type="text/javascript" th:inline="javascript">
+		$(function (){
+			var data = [[${proReport}]];
+			$.orderProductEcharts(data);
+		});
+	</script>
+</body>
+</html>

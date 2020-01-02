@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('产品管理')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('支付网关','产品管理')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="widget-box transparent tabbable">
+								<div class="widget-header widget-header-small">
+									<h4 class="smaller">
+										<i class="fa fa-credit-card bigger-110"></i>
+										支付产品
+									</h4>
+									<button th:if="${#authorization.expression('hasAuthority(''product/add'')')}" 
+										id="modal-add" data-toggle="modal" data-target="#modal-table" 
+										class="btn btn-app btn-primary btn-xs pull-right" style="height: 28px;">
+										<i class="fa fa-plus"></i>添加
+									</button>
+								</div>
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div class="table-responsive products">
+										<div th:if="${!#lists.isEmpty(products)}" class="col-xs-1" th:each="product:${products}">
+											<ul class="defray_info">
+												<li class="defray_name">
+													<span th:text="${product.productName}"></span>
+													<label th:if="${#authorization.expression('hasAuthority(''product/edit'')')}">
+														<input type="checkbox" class="ace ace-switch ace-switch-3 on-or-off" 
+															data-ajax-url="product/state" th:value="${product.id}" th:checked="${product.state}">
+														<span class="lbl"></span>
+													</label>
+												</li>
+												<li class="name_logo pay" th:attrappend="class=${product.productMark}" 
+													th:style="'background-image: url(assets/images/product/'+${product.productMark}+'.png)'"></li>
+												<li class="description">
+													<span th:if="${#strings.isEmpty(product.desc)}" th:text="${product.productName}+'：'+${product.productMark}"></span>
+													<span th:unless="${#strings.isEmpty(product.desc)}" th:text="${product.desc}"></span>
+												</li>
+												<li class="select" th:if="${#authorization.expression('hasAuthority(''product/edit'')')}">
+													<select class="form-control" name="galleryId" th:id="${product.productMark}" 
+														data-rel="tooltip" data-placement="bottom" title="点击可切换默认通道">
+														<option value="">--请选择--</option>
+														<option th:if="${!#lists.isEmpty(product.gallerys)}" 
+														th:each="item:${product.gallerys}" th:value="${item.id}" 
+														th:selected="${product.gallery} != null and ${product.gallery.id}==${item.id}" th:text="${item.galleryName}"></option>
+													</select>
+												</li>
+												<li class="operating">
+													<button th:if="${#authorization.expression('hasAuthority(''product/delete'')')}" 
+														th:unless="${product.productMark}=='ebank'" data-ajax-url="product/delete" th:id="${product.id}" 
+														class="btn btn-sm btn-danger btn-delete" data-flash="true"><i class="fa fa-trash"></i>删除</button>
+													<button th:if="${product.productMark}=='ebank'" class="btn btn-sm btn-success" 
+														th:attr="data-id=${product.id}" id="children"><i class="fa fa-eye"></i>查看</button>
+													<button th:if="${#authorization.expression('hasAuthority(''product/edit'')')}" 
+														class="btn btn-sm btn-primary product-edit" th:id="${product.productMark}" 
+														data-toggle="modal" data-target="#modal-table"><i class="fa fa-edit"></i>编辑</button>
+												</li>
+											</ul>
+										</div>
+										
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<script class="invisible" type="text/javascript" th:if="${!#lists.isEmpty(products)}" th:inline="javascript">
+		var products = [[${products}]];
+		$.productsEdit(products,"");
+		$("#children").on("click", function (){
+			layer.open({
+				type: 2,
+				title: "网银产品",
+				shade: 0.6,
+				skin: "layui-layer-7 layui-layer-rim",
+				maxmin: true,
+				content: '/ebank_'+this.getAttribute("data-id")+'.html'
+			});
+		});
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''product/add'')')}" class="invisible" type="text/javascript">
+		$("#modal-add").ModalBox({
+			title: "添加产品",
+			url: "product/add",
+			_flash: true,
+			forms: [
+				{title: "\u4EA7\u54C1\u540D\u79F0",name: "productName",doc: "input",docType: "text"},
+				{title: "\u4EA7\u54C1\u6807\u8BC6",name: "productMark",doc: "input",docType: "text"},
+				{title: "\u4EA7\u54C1\u7C7B\u578B",name: "type",doc: "select",callback: function (){
+					return "<option value=''>--\u8BF7\u9009\u62E9--</option>" + 
+								"<option value='0'>\u666E\u901A\u4EA7\u54C1</option>" + 
+								"<option value='1'>\u7F51\u94F6\u4EA7\u54C1</option>";
+				}},
+				{title: "\u4EA7\u54C1\u63CF\u8FF0",name: "desc",nullable: true,doc: "textarea"}
+			]
+		});
+	</script>
+</body>
+</html>

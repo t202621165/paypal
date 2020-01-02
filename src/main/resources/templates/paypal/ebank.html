@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>产品详情</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="content-type" content="text/html; charset=UTF-8">
+	<meta name="_csrf" th:content="${_csrf.token}">
+	<meta name="_csrf_header" th:content="${_csrf.headerName}">
+	<link rel="stylesheet" th:href="@{assets/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{assets/css/ace.min.css}" />
+	<link rel="stylesheet" th:href="@{assets/css/font-awesome.min.css}" />
+	<script th:src="@{assets/js/jquery-2.0.3.min.js}"></script>
+	<style type="text/css">
+		li.imgs {margin: 0!important;border: none!important;}
+		li:hover {cursor: pointer;}
+		.banks .text {
+		    border-radius: 3px;
+		    background-color: rgba(0,0,0,.6)!important;
+		}
+		.banks .b-img {padding: 6px 12px;text-align: center;}
+		.select-default select {
+			padding: 0;margin-bottom: 8px;
+			background-color: rgba(0,0,0,.7);
+			border-color: #000;
+			color:#fff;
+			border-radius: 4px;
+		}
+		.select-default select:hover {
+			background-color: #000;
+		}
+	</style>
+</head>
+<body>
+	<div class="main-container" id="main-container">
+
+		<div class="main-container-inner">
+
+			<div class="page-content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div th:if="${product}!=null" class="widget-box transparent tabbable">
+							<div class="widget-header widget-header-small">
+								<h4 class="smaller">
+									<i class="fa fa-credit-card bigger-110"></i>
+									支付产品
+								</h4>
+								<button th:if="${#authorization.expression('hasAuthority(''product/add'')')}" 
+									id="modal-add" data-toggle="modal" data-target="#modal-table" 
+									class="btn btn-app btn-primary btn-xs pull-right" style="height: 28px;">
+									<i class="fa fa-plus"></i>添加
+								</button>
+							</div>
+							<div class="tab-content no-border">
+								<div class="row padding-12">
+									<div class="bank_info col-xs-12 no-padding">
+										<div class="title_bank">基本信息</div>
+										<div class="col-xs-1 infos infos-right text-center">
+											<input type="hidden" id="parentId" name="parentId" th:value="${product.id}">
+											<input type="hidden" id="galleryId" th:value="${product.gallery}==null?'null':${product.gallery.id}">
+											<img th:src="'assets/images/product/'+${product.productMark}+'.png'" width="100%">
+											<span class="btn btn-primary" th:text="${product.productMark}=='ebank'?'中国银联':${product.productName}"></span>
+										</div>
+										<div class="col-xs-10 infos infos-left">
+											<div class="col-xs-4 bottom-5"><label>支付名称：</label> <span th:text="${product.productName}"></span></div>
+											<div class="col-xs-4 bottom-5">
+												<label>产品个数：</label> <span th:text="${#lists.size(children)}"></span>
+											</div>
+											<div class="col-xs-4 bottom-5"><label>所属国家：</label> <span>中国(CHINA)</span></div>
+											<div class="col-xs-4 bottom-5"><label>交易方式：</label> <span th:text="${product.productMark}=='ebank'?'在线支付':'扫码支付'"></span></div>
+											<div class="col-xs-4 bottom-5"><label>交易类型：</label> <span>人民币</span></div>
+											<div class="col-xs-4 bottom-5">
+												<label>状　　态：</label> <span th:class="${product.state}?'green':'red'" th:text="${product.state}?'启用':'禁用'"></span>
+											</div>
+											<div class="col-xs-12 bottom-5">
+												<label class="label_name">支付介绍：</label>
+												<span class="name" th:text="${product.desc}"></span>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<div class="row padding-12" th:if="${!#lists.isEmpty(children)}">
+									<div class="bank_info bans_info col-xs-12">
+										<div class="title_bank">支持产品(银行)</div>
+										<div class="col-xs-12 banks">
+											<ul class="ace-thumbnails">
+												<li class="imgs" th:each="child:${children}">
+													<div class="b-img">
+														<img th:class="${child.state}?'':'disabled'" th:id="${child.productMark}" th:alt="${child.productName}" 
+															th:src="'assets/images/product/'+${child.productMark}+'.png'">
+														<div class="text">
+															<div class="inner action-buttons">
+																<span th:if="${!#authorization.expression('hasAuthority(''product/edit'')')}" th:text="${child.productName}"></span>
+																<span class="select-default" 
+																	th:if="${#authorization.expression('hasAuthority(''product/edit'')')}">
+																	<select name="galleryId" th:id="${child.productMark}" 
+																		data-rel="tooltip" data-placement="bottom" title="点击可切换默认通道">
+																		<option value="">--请选择--</option>
+																		<option th:if="${!#lists.isEmpty(child.gallerys)}" 
+																		th:each="item:${child.gallerys}" th:value="${item.id}" 
+																		th:selected="${child.gallery.id}==${item.id}" th:text="${item.galleryName}"></option>
+																		<option th:if="${#lists.isEmpty(child.gallerys)}" 
+																		th:each="item:${product.gallerys}" th:value="${item.id}" 
+																		th:selected="${child.gallery.id}==${item.id}" th:text="${item.galleryName}"></option>
+																	</select>
+																</span>
+																<br>
+																<a th:if="${#authorization.expression('hasAuthority(''product/edit'')')}" 
+																	class="product-edit" title="编辑" data-toggle="modal" data-target="#modal-table" 
+																	th:id="${child.productMark}" data-rel="tooltip" data-placement="right">
+																	<i class="fa fa-edit"></i>
+																</a>
+				
+																<a th:if="${#authorization.expression('hasAuthority(''product/edit'')')}" 
+																	href="javascript:;" class="on-off " th:attrappend="class=${child.state}?'orange':'green'" 
+																	data-ajax-url="product/state" th:id="${child.id}" data-rel="tooltip" data-placement="right" th:title="${child.state}?'禁用':'启用'">
+																	<i class="fa " th:attrappend="class=${child.state}?'fa-ban':'fa-check'"></i>
+																</a>
+				
+																<a th:if="${#authorization.expression('hasAuthority(''product/delete'')')}" 
+																	href="javascript:;" class="red btn-delete" data-toggle="true" 
+																	data-rel="tooltip" data-placement="right" title="删除" 
+																	data-ajax-url="product/delete" th:id="${child.id}">
+																	<i class="fa fa-trash"></i>
+																</a>
+															</div>
+														</div>
+													</div>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<!-- /.col -->
+				</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.page-content -->
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+	
+	<script th:src="@{assets/js/bootstrap.min.js}"></script>
+	<script th:src="@{assets/js/layer/layer.js}"></script>
+	<script th:src="@{core/js/commom.tools.js}"></script>
+	<script th:src="@{core/js/jquery.modal.js}"></script>
+	<script class="invisible" type="text/javascript" th:if="${product} == null">
+		layer.msg("当前产品不存在或已被删除！",{anim: 6,time: 0});
+	</script>
+	<script class="invisible" type="text/javascript" th:if="${!#lists.isEmpty(children)}" th:inline="javascript">
+		var children = [[${children}]];
+	</script>
+	<script class="invisible" type="text/javascript" th:if="${#authorization.expression('hasAuthority(''product/edit'')')}">
+		$.productsEdit(children,$("#parentId").val());
+	</script>
+	<script class="invisible" type="text/javascript">
+		$(document).on("contextmenu",function(e) {
+			$("#context-menu").addClass("none");
+			layer.msg('\u8BF7\u8054\u7CFB\u7BA1\u7406\u5458\uFF01',{anim: 6,time: 600});
+			return false;
+		});
+		$.bankState();
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''product/add'')')}" class="invisible" type="text/javascript">
+		$("#modal-add").ModalBox({
+			title: "添加产品",
+			url: "product/add",
+			_flash: true,
+			hideData: [{name: "parentId",value: $("#parentId").val()},{name: "galleryId",value: $("#galleryId").val()}],
+			forms: [
+				{title: "\u4EA7\u54C1\u540D\u79F0",name: "productName",doc: "input",docType: "text"},
+				{title: "\u4EA7\u54C1\u6807\u8BC6",name: "productMark",doc: "input",docType: "text"},
+				{title: "\u4EA7\u54C1\u7C7B\u578B",name: "type",doc: "select",callback: function (){
+					return "<option value='1'>\u7F51\u94F6\u4EA7\u54C1</option>";
+				}},
+				{title: "\u4EA7\u54C1\u63CF\u8FF0",name: "desc",nullable: true,doc: "textarea"}
+			]
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('结算管理')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('资金管理','提现业务')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4>结算查询</h4>
+									<span class="widget-toolbar"> <a href="javascript:;">
+											<i class="fa fa-refresh"></i>
+									</a> <a href="javascript:;" data-action="collapse"> <i
+											class="fa fa-chevron-up"></i>
+									</a>
+									</span>
+								</div>
+								<div class="widget-body">
+									<div class="widget-main">
+										<form id="searchForm">
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon"> <i
+															class="fa fa-calendar bigger-110"></i>
+														</span> <input class="form-control date-range-picker" type="text"
+															id="id-date-range-picker-1">
+													</div>
+												</div>
+												<input type="hidden" name="startDate"> <input
+													type="hidden" name="endDate">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">金额</span> <input
+															name="startAmount" type="text"
+															class="form-control search-query" placeholder="0">
+														<span class="input-group-addon"
+															style="background: none;border: none;padding: 5px;">-</span>
+														<input name="endAmount" type="text"
+															class="form-control search-query" placeholder="999..">
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">商户</span> <input
+															name="merchantId" type="text"
+															class="form-control search-query" placeholder="请输入商户ID">
+														<span class="input-group-btn">
+															<button type="button"
+																class="btn btn-primary btn-sm btn-query">查询</button>
+														</span>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="tabbable">
+								<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+									<li data-tab-key="state" data-tab-value="0" class="active"
+										data-rel="tooltip" data-placement="bottom" title="查看待审核记录">
+										<a data-toggle="tab" href="#pay_check"> <i
+											class="orange fa fa-hourglass-1 bigger-130 summary"></i> <span
+											class="bigger-110">待审核</span>
+										</a>
+									</li>
+
+									<li data-tab-key="state" data-tab-value="2" data-rel="tooltip"
+										data-placement="bottom" title="查看待付款记录"><a
+										data-toggle="tab" href="#pay_check"> <i
+											class="blue fa fa-hourglass-end bigger-130 summary"></i> <span
+											class="bigger-110">待付款</span>
+										</a>
+									</li>
+
+									<li class="pay_record" data-tab-key="state" data-tab-value="1"
+										data-rel="tooltip" data-placement="bottom" title="查看历史结算记录">
+										<a data-toggle="tab" href="#pay_check"> <i
+											class="red fa fa-history bigger-130 summary"></i> <span
+											class="bigger-110">结算记录</span>
+										</a>
+									</li>
+<!-- 									<li data-tab-key="state" data-tab-value="3" -->
+<!-- 										data-rel="tooltip" data-placement="bottom" title="查看商户代付记录"> -->
+<!-- 										<a data-toggle="tab" href="#pay_check"> <i -->
+<!-- 											class="red fa fa-history bigger-130 summary"></i> <span -->
+<!-- 											class="bigger-110">代付处理中</span> -->
+<!-- 									</a> -->
+<!-- 									</li> -->
+<!-- 									<li data-tab-key="state" data-tab-value="-3" -->
+<!-- 										data-rel="tooltip" data-placement="bottom" title="查看商户代付记录"> -->
+<!-- 										<a data-toggle="tab" href="#pay_check"> <i -->
+<!-- 											class="red fa fa-history bigger-130 summary"></i> <span -->
+<!-- 											class="bigger-110">代付失败</span> -->
+<!-- 									</a> -->
+<!-- 									</li> -->
+<!-- 									<li data-tab-key="state" data-tab-value="4" -->
+<!-- 										data-rel="tooltip" data-placement="bottom" title="查看商户代付记录"> -->
+<!-- 										<a data-toggle="tab" href="#pay_check"> <i -->
+<!-- 											class="red fa fa-history bigger-130 summary"></i> <span -->
+<!-- 											class="bigger-110">代付成功</span> -->
+<!-- 									</a> -->
+<!-- 									</li>							 -->
+								</ul>
+
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div id="pay_check" class="tab-pane in active">
+										<table id="sample-table"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center"><label><input
+															type="checkbox" class="ace"><span class="lbl"></span></label>
+													</th>
+													<th class="center">申请时间</th>
+													<th class="center">流水号</th>
+													<th class="center">商户<span class="tab-p-foot none">/收款人</span></th>
+													<th class="center">收款银行</th>
+													<th class="center">收款帐号</th>
+													<th class="center">金额<span class="tab-p-foot none">/手续费</span></th>
+													<th class="center">手续费</th>
+													<th class="center">描述</th>
+													<th class="center">完成时间</th>
+													<th class="center">状态</th>
+												</tr>
+											</thead>
+
+										</table>
+									</div>
+
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+
+	<div id="modal-table" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="table-header" style="background: none;">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">
+							<span class="white">&times;</span>
+						</button>
+						<img src="assets/images/logo.png" class="center-block">
+					</div>
+				</div>
+
+				<div class="modal-body no-padding"></div>
+
+				<div class="modal-footer no-margin-top">
+					<button class="btn btn-sm btn-danger pull-right"
+						data-dismiss="modal">
+						<i class="icon-remove"></i> 关闭
+					</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- PAGE CONTENT ENDS -->
+
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+
+	<!-- date range picker scripts -->
+	<div th:replace="common/common_js :: daterangepicker"></div>
+
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+
+	<script type="text/javascript">
+		var options = {
+			rangePicker : true,
+			element : "#sample-table",
+			ajax : {
+				url : "funds/settlement"
+			},
+			order : [ 1, "desc" ],
+			columns : [
+				{
+					"data" : "id",
+					"class" : "center",
+					"orderable" : false,
+					"render" : function(data, type, full, row) {
+						return '<label><input name="id" value="' + data + '" type="hidden" class="serialize"><input type="checkbox" class="ace serialize"><span class="lbl"></span></label>';
+					}
+				},
+				{
+					"data" : "id",
+					"class" : "center",
+					"orderSequence" : [ "desc", "asc" ],
+					"render" : function(data, type, full) {
+						var arr = full.applyDate.split(" ");
+						return "<p class='tab-p-heard'>" + arr[0] + "</p><p class='tab-p-foot'>" + arr[1] + "</p>";
+					}
+				},
+				{
+					"data" : "serialNumber",
+					"class" : "center hidden-1080",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						//return $.stringEllipsis(data, 5, 5);
+						return data;
+					}
+				},
+				{
+					"data" : "merchantId",
+					"class" : "center",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						var realName = full.realName == null ? "--" : full.realName;
+						return "<p class='tab-p-heard'>" + data + "</p><p class='tab-p-foot'>" + realName + "</p>";
+					}
+				},
+				{
+					"data" : "bankName",
+					"orderable" : false,
+					"class" : "center hidden-980",
+					"orderSequence" : [ "desc", "asc" ],
+					"render":function(data,type,full){
+						var value = data == null ? "--" : data;
+						return value;
+					}
+				},
+				{
+					"data" : "bankNumber",
+					"class" : "center hidden-680",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						var value = data == null ? "--" : data;
+						return '<div class="action-buttons" style="position: relative;">' +
+							'<span>' + value + '</span>' +
+							'<a href="javascript:;" class="clipboard" data-rel="tooltip" data-placement="bottom" ' +
+							'title="点击复制"> <i class="fa fa-clipboard copy"></i></a>' +
+							'</div>';
+					}
+				},
+				{
+					"data" : "amount",
+					"class" : "center green",
+					"orderSequence" : [ "desc", "asc" ],
+					"render" : function(data, type, full) {
+						return "<p class='tab-p-heard green'><i class='fa fa-rmb'></i> " + $.toThousands(data) +
+							"</p><p class='tab-p-foot none pnone'><i class='fa fa-rmb'></i> " + $.toThousands(full.cost) + "</p>";
+					}
+				},
+				{
+					"data" : "cost",
+					"class" : "center hidden-1080",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						return "<i class='fa fa-rmb'></i> " + $.toThousands(data);
+					}
+				},
+				{
+					"data" : "discription",
+					"class" : "center hidden-680",
+					"orderable" : false
+				},
+				{
+					"data" : "complateDate",
+					"class" : "center hidden-1080",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						if (data == undefined)
+							return "<p class='tab-p-heard'>--</p><p class='tab-p-foot'>--</p>";
+						var arr = data.split(" ");
+						return "<p class='tab-p-heard'>" + arr[0] + "</p><p class='tab-p-foot'>" + arr[1] + "</p>";
+					}
+				},
+				{
+					"data" : "state",
+					"class" : "center hidden-680",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						var result = "";
+						if (data == 0) {
+							return '<span class="label label-grey arrowed-in-right arrowed">待审核</span>';
+						} else if (data == 1) {
+							if (full.replyState) {
+								var serialNumber = full.serialNumber;
+								return '<span class="label label-success arrowed-in-right arrowed">付款成功</span> <span class="label label-warning arrowed-in-right arrowed" onclick = \"back(\''+serialNumber+'\');\">驳回</span>';
+							}
+							return '<span class="label label-primary arrowed-in-right arrowed">批付中</span>';
+						} else if (data == 2) {
+							return '<span class="label label-primary arrowed-in-right arrowed">待付款</span>';
+						}else if (data == 3) {
+							//var serialNumber = full.serialNumber;
+							//<span class="label label-warning arrowed-in-right arrowed" onclick = \"back(\''+serialNumber+'\');\">驳回</span>
+							return '<span class="label label-primary arrowed-in-right arrowed">代付处理中</span>';
+						}else if (data == 4){
+							return '<span class="label label-success arrowed-in-right arrowed">代付成功</span>';
+						}else if (data == -3){
+							var data = full.merchantId+","+full.amount+","+full.cost+","+full.serialNumber+","+full.discription;
+							return '<span class="label label-grey arrowed-in-right arrowed">代付失败</span> <span class="label label-warning arrowed-in-right arrowed" onclick = \"back(\''+data+'\');\">资金驳回</span>';
+						}
+					}
+				}
+			],
+			initCompletes : [],
+			drawCallbacks : [
+				{
+					render : function(jsonData) {
+						$.copyData();
+						if (typeof jsonData.sumData != "undefined") {
+							var sumData = jsonData.sumData;
+							var _html = '<div class="message-infobar" id="id-message-infobar">' +
+								'<b>总计：</b>' +
+								'<b class="blue">金额_：</b>' +
+								'<b class="green">' + $.toThousands(sumData[0].totalAmount) + '</b>&nbsp;' +
+								'<b class="blue">手续费_：</b>' +
+								'<b class="green">' + $.toThousands(sumData[0].totalCost) + '</b>&nbsp;' +
+								'<b class="blue">总笔数_：</b>' +
+								'<b class="green">' + sumData[0].totalCount + '</b>' +
+								'</div>';
+							$(".total-record").empty().append(_html);
+						}
+					}
+				}
+			]
+		};
+	</script>
+	<script
+		th:if="${#authorization.expression('hasAuthority(''funds/check_refuse'')')}"
+		class="invisible" type="text/javascript">
+		options.initCompletes.push(
+			{
+				render : function(jsonData) {
+					var state = jsonData.data[0].state;
+					if (state == 0)
+						$("#sample-table_length").append('<button data-ajax-url="funds/check_refuse" class="btn btn-app btn-danger btn-xs btn-batch" style="height: 34px;float:right;"><i class="fa fa-ban"></i>拒绝审核</button>');
+				}
+			});
+	</script>
+	<script
+		th:if="${#authorization.expression('hasAuthority(''funds/check'')')}"
+		class="invisible" type="text/javascript">
+		options.initCompletes.push(
+			{
+				render : function(jsonData) {
+					var state = jsonData.data[0].state;
+					if (state == 0)
+						$("#sample-table_length").append('<button data-ajax-url="funds/check" class="btn btn-app btn-primary btn-xs btn-batch" style="height: 34px;float:right;"><i class="fa fa-check-square-o"></i>审核通过</button>');
+				}
+			});
+	</script>
+	<script
+		th:if="${#authorization.expression('hasAuthority(''funds/pay_refuse'')')}"
+		class="invisible" type="text/javascript">
+		options.initCompletes.push(
+			{
+				render : function(jsonData) {
+					var state = jsonData.data[0].state;
+					if (state == 2)
+						$("#sample-table_length").append('<button data-ajax-url="funds/pay_refuse" class="btn btn-app btn-danger btn-xs btn-batch" style="height: 34px;float:right;"><i class="fa fa-ban"></i>拒绝付款</button>');
+				}
+			});
+	</script>
+	<script
+		th:if="${#authorization.expression('hasAuthority(''funds/pay'')')}"
+		class="invisible" type="text/javascript">
+		options.initCompletes.push(
+			{
+				render : function(jsonData) {
+					var state = jsonData.data[0].state;
+					if (state == 2) {
+						$("#sample-table_length").append('<button data-ajax-url="funds/pay" class="btn btn-app btn-primary btn-xs btn-batch" style="height: 34px;float:right;"><i class="fa fa-check-square-o"></i>确定付款</button>');
+						$("#sample-table_length").append('<button data-ajax-url="funds/payee"  class="btn btn-app btn-success btn-xs btn-alipay" style="height: 34px;float:right;"><i class="fa fa-paypal"></i>资金代付</button>');
+					}
+				}
+			});
+	</script>
+	<script class="invisible" type="text/javascript">
+		options.initCompletes.push({
+			render : function(jsonData) {
+				var state = jsonData.data[0].state;
+				if (state == 1)
+					$("#sample-table_length").append('<button data-ajax-url="funds/pay_refuse" class="btn btn-app btn-danger btn-xs btn-batch-delete" style="height: 34px;float:right;"><i class="fa fa-trash"></i>批量删除</button>');
+			}
+		});
+		options.initCompletes.push({
+			render : function() {
+				mapping().batch();
+				mapping().batchAlipay();
+			}
+		});
+		var paypal = new PayPal(options);
+		paypal.dataTab();
+		
+		function back(data){
+		 if(confirm('资金驳回操作将会把代付失败的金额驳回到商户账户,如已经手动出款给商户请勿执行该操作！是否确定驳回资金？')){
+			  $.ajax({
+					url:"/funds/pay_back",
+					type:"post",
+					data:{"data":data},
+					success:function(data){
+						alert(data.msg);
+						window.location.reload();
+					}
+				})
+		   }
+		}
+	</script>
+</body>
+</html>

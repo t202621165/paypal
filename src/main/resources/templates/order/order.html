@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('订单列表')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('订单管理','订单列表')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4>订单查询</h4>
+									<span class="widget-toolbar">
+										<a href="javascript:;">
+											<i class="fa fa-refresh"></i>
+										</a>
+
+										<a href="javascript:;" data-action="collapse">
+											<i class="fa fa-chevron-up"></i>
+										</a>
+									</span>
+								</div>
+								<div class="widget-body">
+									<div class="widget-main">
+										<form id="searchForm">
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">
+															<i class="fa fa-calendar bigger-110"></i>
+														</span>
+														<input class="form-control date-range-picker" type="text" id="id-date-range-picker-1">
+													</div>
+												</div>
+												<input type="hidden" name="startDate">
+												<input type="hidden" name="endDate">
+												<div class="col-xs-4" th:if="${not #lists.isEmpty(products)}">
+													<div class="input-group">
+														<span class="input-group-addon">产品</span>
+														<select name="productId" class="form-control" id="form-field-select-1" style="height: 34px;">
+															<option value="">--请选择--</option>
+															<option th:each="item:${products}" th:value="${item.id}" th:text="${item.productName}"></option>
+														</select>
+													</div>
+												</div>
+												<div class="col-xs-4" th:if="${not #lists.isEmpty(gallerys)}">
+													<div class="input-group">
+														<span class="input-group-addon">通道</span>
+														<select name="galleryId" class="form-control" id="form-field-select-1" style="height: 34px;">
+															<option value="">--请选择--</option>
+															<option  th:each="item:${gallerys}" th:value="${item.id}" th:text="${item.galleryName}"></option>
+														</select>
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">商户</span>
+														<input name="merchantId" type="text" class="form-control search-query" placeholder="请输入商户ID">
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">代理商户</span>
+														<input name="agencyId" type="text" class="form-control search-query" placeholder="请输入代理商户ID">
+													</div>
+												</div>
+												
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">金额</span>
+														<input name="startAmount" type="text" class="form-control search-query" placeholder="0">
+														<span class="input-group-addon" style="background: none;border: none;padding: 5px;">-</span>
+														<input name="endAmount" type="text" class="form-control search-query" placeholder="999..">
+													</div>
+												</div>
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">订单</span>
+														<select class="form-control" id="form-field-select-1" style="height: 34px;" onchange="$('#oNumber').attr('name',this.value);">
+															<option value="sysOrderNumber">系统订单</option>
+															<option value="merchantOrderNumber">商户订单</option>
+															<option value="partyOrderNumber">接口订单</option>
+														</select>
+														<span class="input-group-addon" style="background: none;border: none;padding: 5px;">-</span>
+														<input id="oNumber" name="sysOrderNumber" th:value="${orderNumber}" type="text" class="form-control search-query" placeholder="输入要查询的订单号">
+													</div>
+												</div>
+												
+												<div class="col-xs-12 text-center">
+													<button type="button" class="btn btn-app btn-yellow btn-xs btn-yesterday" style="height: 34px;padding: 0 15px;">上一天</button>
+													<button type="button" class="btn btn-app btn-primary btn-xs btn-today" style="height: 34px;padding: 0 15px;">今天</button>
+													<button type="button" class="btn btn-app btn-yellow btn-xs btn-tomorrow disabled" style="height: 34px;padding: 0 15px;">下一天</button>
+													<button type="button" class="btn btn-app btn-primary btn-xs btn-query" style="height: 34px;padding: 0 15px;">查询</button>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div class="clearfix alert alert-block alert-success" style="position: relative;">
+								<!-- 轮播（Carousel）导航 -->
+								<a class="carousel-control angle-left" href="javascript:;">
+									<span class="glyphicon glyphicon-chevron-left fa fa-angle-double-left" aria-hidden="true"></span>
+								</a>
+								<a class="carousel-control angle-right" href="javascript:;" style="right: 0px;left: auto;">
+									<span class="glyphicon glyphicon-chevron-right fa fa-angle-double-right" aria-hidden="true"></span>
+								</a>
+								<div class="col-xs-2 show-2">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											订单总额<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="提交订单总金额、笔数">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="totalAmount">0.00 元</b></h4>
+										<p id="totalCount" style="margin: 0;color: #888888;">0 笔</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 hidden-540 show-3">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											订单收入(<span style="color:red">平台</span>)<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="平台交易订单实收利润">?</span>
+										</p>
+										<h4 style="margin: 2px 0;color: #0FC06F;"><b id="totalPlaProfits">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 hidden-720 show-4">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											订单收入(<span style="color:red">商户</span>)<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="商户订单实收利润">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="totalMerProfits">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>	
+								
+								<div class="col-xs-2 hidden-720 show-5">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											风控总额<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="订单的随机额外金额">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="totalTailAmount">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 show-2" style="margin-left: 1px;">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+										订单总成交<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="完成付款订单总金额、笔数">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="successAmount">0.00 元</b></h4>
+										<p id="successCount" style="margin: 0;color: #888888;">0 笔</p>
+									</div>
+								</div>																				
+																																																		
+								<div class="col-xs-2 hidden-720 show-5">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											风控收入(<span style="color:red">平台</span>)<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="支付成功的风控成交金额的利润">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="totalTailProfit">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+																
+								<div class="col-xs-2 hidden-720 show-4">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											风控收入(<span style="color:red">商户</span>)<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="支付成功的风控成交金额的利润">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="totalMerTailProfit">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 hidden-980 show-5" style="margin-left: 1px;">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											风控总成交<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="成功订单的随机额外金额">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="totalSucTailAmount">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 hidden-720 show-5">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											等待付款<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="未付款订单金额、笔数">?</span>
+										</p>
+										<h4 style="margin: 2px 0;"><b id="wait_pay">0.00 元</b></h4>
+										<p id="wait_count" style="margin: 0;color: #888888;">0 笔</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 hidden-540 show-3">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											平台收入(<span style="color:red">总润</span>)<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="平台收入=订单收入（平台）+风控收入（平台）">?</span>
+										</p>
+										<h4 style="margin: 2px 0;color: #0FC06F;"><b id="platAllProfit">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 hidden-540 show-3">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											商户收入(<span style="color:red">总润</span>)<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="商户收入=订单收入（商户）+风控收入（商户）">?</span>
+										</p>
+										<h4 style="margin: 2px 0;color: #0FC06F;"><b id="merAllProfit">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+								
+								<div class="col-xs-2 hidden-540 show-3">
+									<div class="input-group margin-center">
+										<p style="margin: 0;">
+											代理收入<span class="help-button" data-rel="popover-notitle" data-trigger="hover" data-placement="bottom" data-content="代理总收入">?</span>
+										</p>
+										<h4 style="margin: 2px 0;color: #0FC06F;"><b id="agencyAllProfit">0.00 元</b></h4>
+										<p style="margin: 0;">&nbsp;</p>
+									</div>
+								</div>
+								
+							</div>																		
+							
+						</div>															
+						
+						<div class="col-xs-12">
+							<div class="tabbable">
+								<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+									<li data-tab-key class="active first" data-rel="tooltip" data-placement="bottom" title="查看全部订单">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">全部</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="1" data-rel="tooltip" data-placement="bottom" title="成功订单">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">成功</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="2" data-rel="tooltip" data-placement="bottom" title="待发货订单">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">待发货</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="0" data-rel="tooltip" data-placement="bottom" title="待付款订单">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">待付款</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="3" data-rel="tooltip" data-placement="bottom" title="申请退款订单">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">退款中</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="4" data-rel="tooltip" data-placement="bottom" title="退款成功订单">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">退款成功</a>
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="5" data-rel="tooltip" data-placement="bottom" title="退款失败订单">
+										<a data-toggle="tab" href="javascript:;" data-target="draft">退款失败</a>
+									</li>
+									
+								</ul>
+								<div id="progressbar" class="progress progress-small progress-striped" data-percent="0.00%" 
+								data-rel="tooltip" data-placement="bottom" title="订单成功率" style="margin-bottom: 0;">
+									<div class="progress-bar progress-bar-success"></div>
+								</div>
+								<div class="tab-content no-border" style="padding: 0px 0px 12px 0px;">
+									<div class="table-responsive">
+										<table id="sample-table"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center"><i class="fa fa-paypal"></i></th>
+													<th class="center hidden-680">创建时间</th>
+													<th class="center">订单号</th>
+													<th class="center">订单金额</th>
+													<th class="center">风控金额</th>
+													<th class="center hidden-680">订单收入(商户)</th>
+													<th class="center hidden-680">风控收入(商户)</th>
+													<th class="center hidden-680">商户收入(总润)</th>
+													<th class="center hidden-680">代理收入</th>
+													<th class="center hidden-680">订单收入(平台)</th>			
+													<th class="center hidden-680">风控收入(平台)</th>
+													<th class="center hidden-680">平台收入(总润)</th>
+													<th class="center hidden-680">支付通道</th>
+													<th class="center hidden-680">商户ID</th>
+													<th class="center">状态</th>
+												</tr>
+											</thead>
+										</table>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<div id="modal-table" class="modal fade" style="display: block;" th:if="${#authorization.expression('hasAuthority(''order/details'')')}">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="table-header" style="background: none;">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+							<span>&times;</span>
+						</button>
+						<img src="assets/images/logo.png" class="center-block">
+					</div>
+				</div>
+
+				<div class="modal-body no-padding">
+					<div class="profile-user-info profile-user-info-striped" id="orderDetails">
+						<div class="profile-info-row">
+							<div class="profile-info-name" style="padding-top: 40px;">付款进度</div>
+	
+							<div class="profile-info-value">
+								<input name="id" value="" type="hidden">
+								<ul class="wizard-steps">
+									<li data-target="#step1" class="text-left state1">
+										<span class="title text-left">订单创建</span>
+										<span class="step"><i class="fa fa-check"></i></span>
+										<span class="title text-left" id="orderDate">--</span>
+									</li>
+	
+									<li data-target="#step2" class="state2">
+										<span class="title state-title">--</span>
+										<span class="step state-step"></span>
+									</li>
+	
+									<li data-target="#step3" class="text-right">
+										<span class="title text-right state-title">--</span>
+										<span class="step state-step"></span>
+										<span class="title text-right" id="completeDate">--</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+						
+						<div class="profile-info-row">
+							<div class="profile-info-name">商户</div>
+	
+							<div class="profile-info-value">
+								<span class="editable" id="merchantId">--</span>
+								<span class="editable editable-click">
+									<a class="merchant" id="merchantAccount" href="javascript:;" target="o_profile" 
+										data-rel="tooltip" data-placement="bottom" data-original-title="点击查看商户资料">--</a>
+								</span>
+							</div>
+						</div>
+	
+						<div class="profile-info-row">
+							<div class="profile-info-name">订单金额</div>
+	
+							<div class="profile-info-value green">
+								<i class="fa fa-cny"></i> <span class="editable" id="amount">0.00</span>
+							</div>
+						</div>
+						
+						<div class="profile-info-row">
+							<div class="profile-info-name">系统订单号</div>
+	
+							<div class="profile-info-value action-buttons">
+								<i class="icon-map-marker light-orange bigger-110"></i>
+								<span id="sysOrderNumber" class="editable editable-click">--</span>
+								<a href='javascript:;' class="clipboard pull-right" data-rel='tooltip' 
+									data-placement='left' title='点击复制'> <i class='fa fa-clipboard copy'></i></a>
+							</div>
+						</div>
+	
+						<div class="profile-info-row">
+							<div class="profile-info-name">商户订单号</div>
+	
+							<div class="profile-info-value action-buttons">
+								<span id="merchantOrderNumber" class="editable">--</span>
+								<a href='javascript:;' class="clipboard pull-right" data-rel='tooltip' 
+									data-placement='left' title='点击复制'> <i class='fa fa-clipboard copy'></i></a>
+							</div>
+						</div>
+						<div class="profile-info-row">
+							<div class="profile-info-name">接口订单号</div>
+	
+							<div class="profile-info-value action-buttons">
+								<span class="editable" id="partyOrderNumber">--</span>
+								<a href='javascript:;' class="clipboard pull-right" data-rel='tooltip' 
+									data-placement='left' title='点击复制'> <i class='fa fa-clipboard copy'></i></a>
+							</div>
+						</div>
+	
+						<div class="profile-info-row">
+							<div class="profile-info-name">付款方ＩＰ</div>
+	
+							<div class="profile-info-value action-buttons">
+								<span class="editable" id="clientIp">--</span>
+								<a href='javascript:;' class="clipboard pull-right" data-rel='tooltip' 
+									data-placement='left' title='点击复制'> <i class='fa fa-clipboard copy'></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="modal-footer no-margin-top">
+					<button class="btn btn-sm btn-primary order-send" 
+						th:if="${#authorization.expression('hasAuthority(''order/send'')')}">
+						<i class="fa fa-send-o"></i>
+						补发
+					</button>
+					<button id="refundBtn" class="btn btn-sm btn-success order-refund" 
+					th:if="${#authorization.expression('hasAuthority(''order/refund'')')}">
+						<i class="fa fa-sign-out"></i>
+						退款
+					</button>
+					<button class="btn btn-sm btn-danger pull-right" data-dismiss="modal">
+						<i class="fa fa-remove"></i>
+						关闭
+					</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- PAGE CONTENT ENDS -->
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- date range picker scripts -->
+	<div th:replace="common/common_js :: daterangepicker"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script type="text/javascript">
+		$('.date-range-picker').daterangepicker();
+		var options = {
+			rangePicker: true,
+			element: "#sample-table",
+			ajax: {
+				url: "order/list"
+			},
+			order: [1, "desc"],
+			columns: [
+				{  
+					"data" : "productMark",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return "<img src='assets/images/mark/"+data+".png'>";
+					}
+				},
+				{  
+					"data" : "orderDate",
+					"class" : "center hidden-680",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						var arr = data.split(" ");
+						return "<p class='tab-p-heard'>"+arr[0]+"</p><p class='tab-p-foot'>"+arr[1]+"</p>";
+					}
+				},
+				{  
+					"data" : "sysOrderNumber",
+					"class" : "center",
+					"render" : function(data, type, full) {
+						return "<p class='tab-p-heard'>" + $.stringEllipsis(data,4,5)+"</p>" + 
+								"<p class='tab-p-foot'>"+$.stringEllipsis(full.merchantOrderNumber,4,5)+"</p>";
+					}
+				},
+				{  
+					"data" : "amount",
+					"class" : "center",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return data.toFixed(2)+'&nbsp;<i class="fa fa-caret-down none" '+
+								'data-rel="popover" data-trigger="hover" data-placement="bottom" ' + 
+								'data-title="商户利润：'+full.merchantProfits.toFixed(2)+'" data-content="平台利润：'+
+								full.platformProfits.toFixed(2)+'"></i>';
+					}
+				},
+				{  
+					"data" : "tailAmount",
+					"class" : "center",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:red'>"+(data == null ? "0.00" : data.toFixed(2))+"</span>";
+					}
+				},
+				{  
+					"data" : "merchantProfits",
+					"class" : "center hidden-720",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:green'>"+data.toFixed(4)+"</span>";
+					}
+				},
+				{  
+					"data" : "merTailProfit",
+					"class" : "center hidden-720",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:blue'>"+(data == null ? "0.00" : data.toFixed(4))+"</span>";
+					}
+				},
+				{
+					"data" : "merAllProfit",
+					"class" : "center",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:green'>"+(data == null ? "0.00" : data.toFixed(4))+"</span>";
+					}
+				},
+				{  
+					"data" : "agencyProfits",
+					"class" : "center hidden-720",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:brown'>"+data.toFixed(4)+"</span>";
+					}
+				},
+				{  
+					"data" : "platformProfits",
+					"class" : "center hidden-720",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:green'>"+data.toFixed(4)+"</span>";
+					}
+				},
+				
+				{
+					"data" : "tailProfit",
+					"class" : "center",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:blue'>"+(data == null ? "0.00" : data.toFixed(4))+"</span>";
+					}
+				},
+				{
+					"data" : "platAllProfit",
+					"class" : "center",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						return "<span style='color:green'>"+(data == null ? "0.00" : data.toFixed(4))+"</span>";
+					}
+				},
+				{  
+					"data" : "galleryName",
+					"orderable": false,
+					"class" : "center hidden-680"
+				},
+				{  
+					"data" : "merchantId",
+					"class" : "center hidden-680",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return data;
+					}
+				},
+				{  
+					"data" : "state",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						var result = "";
+						if (data == 0) {
+							result = '<span class="label label-grey arrowed-in-right arrowed">待付款</span>';
+						}else if (data == 1) {
+							result = '<span class="label label-success arrowed-in-right arrowed">成　功</span>';
+						}else if (data == 2) {
+							result = '<span class="label label-primary arrowed-in-right arrowed">待发货</span>';
+						}else if(data == 3){
+							result = '<span class="label label-yellow arrowed-in-right arrowed">退款处理中</span>';
+						}else if(data == 4){
+							result = '<span class="label label-success arrowed-in-right arrowed">退款成功</span>';
+						}else if(data == 5){
+							result = '<span class="label label-danger arrowed-in-right arrowed">退款失败</span>';
+						}
+						return result;
+					}
+				}
+            ],
+            drawCallbacks: [
+            	{render: function (jsonData){
+            		if (typeof jsonData.sumData != "undefined"){
+						$("#wait_count").text(0 + "\u7B14");
+						$("#wait_pay").text(0.00 + "\u5143");
+						var sumData = jsonData.sumData;
+						
+						var totalAmount = 0.00, totalCount = 0, totalMerProfits = 0.00, 
+							totalPlaProfits = 0.00, failAmount = 0.00, failCount = 0,
+							totalTailAmount = 0.00,totalSucTailAmount = 0.00,totalTailProfit = 0.00,platAllProfit = 0.00,
+							totalMerTailProfit = 0.00,merAllProfit = 0.00,agencyAllProfit = 0.00;
+						for (var index in sumData) {
+							var data = sumData[index];
+							totalCount += data.totalCount;
+							if (data.state == 0){
+								failCount = data.totalCount;
+								failAmount = data.totalAmount;
+								$("#wait_count").text(failCount + "\u7B14");
+								$("#wait_pay").text($.toThousands(failAmount) + "\u5143");
+							}
+							
+							if (data.state == 1 || data.state == 2){
+								totalSucTailAmount += data.totalTailAmount;
+							}
+							
+							totalAmount += data.totalAmount;
+							totalMerProfits += data.totalMerchantProfits;
+							totalPlaProfits += data.totalPlatformProfits;
+							totalTailAmount += data.totalTailAmount;
+							totalTailProfit += data.totalTailProfit;
+							totalMerTailProfit += data.totalMerTailProfit;
+							agencyAllProfit += data.totalAgencyProfits;
+						}
+						platAllProfit = totalPlaProfits + totalTailProfit;
+						merAllProfit = totalMerProfits + totalMerTailProfit;
+						$("#totalAmount").text($.toThousands(totalAmount) + "\u5143");
+						$("#successAmount").text($.toThousands(totalAmount-failAmount) + "\u5143");
+						$("#totalMerProfits").text(totalMerProfits.toFixed(4) + "\u5143");
+						$("#totalSucTailAmount").text(totalSucTailAmount.toFixed(4) + "\u5143");
+						$("#totalPlaProfits").text(totalPlaProfits.toFixed(4) + "\u5143");
+						$("#totalTailAmount").text($.toThousands(totalTailAmount) + "\u5143");
+						$("#totalTailProfit").text(totalTailProfit.toFixed(4) + "\u5143");
+						$("#totalMerTailProfit").text(totalMerTailProfit.toFixed(4) + "\u5143");
+						$("#platAllProfit").text(platAllProfit.toFixed(4) + "\u5143");
+						$("#merAllProfit").text(merAllProfit.toFixed(4) + "\u5143");
+						$("#agencyAllProfit").text(agencyAllProfit.toFixed(4) + "\u5143");
+						$("#totalCount").text(totalCount + "\u7B14");
+						
+						var successCount = totalCount-failCount;
+						$("#successCount").text(successCount + "\u7B14");
+						
+						var rate = ((successCount/totalCount)*100).toFixed(2);
+						$("#progressbar").attr("data-percent",rate+"%");
+						$("#progressbar .progress-bar").css("width",rate+"%");
+					}
+            	}}
+            ]
+		};
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''order/details'')')}" class="invisible" type="text/javascript">
+		options.columns[2] = {  
+					"data" : "sysOrderNumber",
+					"class" : "center",
+					"render" : function(data, type, full) {
+						return "<p class='tab-p-heard'>" + 
+								"<a href='#modal-table' data-toggle='modal' data-rel='tooltip' " +  
+								"data-placement='bottom' title='点击查看订单详情'>"+$.stringEllipsis(data,4,5)+"</a></p>" + 
+								"<p class='tab-p-foot'>"+$.stringEllipsis(full.merchantOrderNumber,4,5)+"</p>";
+					}
+				};
+		options.rowCallbacks = [
+            	{render: function (row, data){
+            		mapping().orderDetails(row ,data);
+            	}}
+            ];
+	</script>
+	<script class="invisible" type="text/javascript">
+		$.copyData();
+		$("#modal-table").css("display","none");
+		$("div.zclip").attr("style","").addClass("zclip-d")
+		var paypal = new PayPal(options);
+		paypal.dataTab();
+		mapping().angle();
+	</script>
+</body>
+</html>

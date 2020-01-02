@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('500')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+	
+	<div class="main-container" id="main-container">
+		<div class="main-container-inner">
+			
+			<div class="page-content searchForm">
+				<div class="row">
+					<div class="col-xs-12 text-center">
+						<div class="error-container">
+							<div class="well">
+								<h1 class="lighter smaller">
+									<span class="orange bigger-125">
+										<i class="fa fa-warning"></i>
+										500
+									</span>
+									Internal Server Error!
+								</h1>
+
+								<hr>
+								<h3 class="lighter smaller">
+									But we are working
+									<i class="fa fa-wrench icon-animated-wrench bigger-125"></i>
+									on it!
+								</h3>
+
+								<div class="space"></div>
+
+								<div>
+									<h4 class="lighter smaller">Meanwhile, try one of the following:</h4>
+
+									<ul class="list-unstyled spaced inline bigger-110 margin-15">
+										<li>
+											<i class="icon-hand-right blue"></i>
+											Read the faq
+										</li>
+
+										<li>
+											<i class="icon-hand-right blue"></i>
+											Give us more info on how this specific error occurred!
+										</li>
+									</ul>
+								</div>
+
+								<hr>
+								<div class="space"></div>
+
+								<div class="center">
+									<form id="logout" action="logout" method="post">
+										<a th:if="${#authorization.expression('hasAuthority(''index.html'')')}" href="index.html" class="btn btn-primary">
+											<i class="icon-arrow-left"></i>
+											返回首页
+										</a>
+	
+										<a id="btn-logout" href="javascript:;" class="btn btn-danger">
+											<i class="fa fa-power-off"></i>
+											退出登录
+										</a>
+									</form>
+								</div>
+							</div>
+						</div><!-- PAGE CONTENT ENDS -->
+					</div>
+				</div><!-- /.row -->
+			</div><!-- /.page-content -->
+		</div><!-- /.main-content -->
+		
+	</div><!-- /.main-container-inner -->
+	
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+</body>
+</html>

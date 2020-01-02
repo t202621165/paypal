@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('403')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+	
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+		
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+			
+			<div class="main-content">
+			<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('无权访问','403')"></div>
+				
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="error-container text-center">
+							<div class="well">
+								<h1 class="lighter smaller">
+									<span class="grey bigger-125">
+										<i class="fa fa-flag-checkered"></i>
+										403
+									</span>
+									No Access Rights !
+								</h1>
+	
+								<hr />
+								<h3 class="lighter smaller">Sorry ! 您暂时没有访问该页面的权限...</h3>
+	
+								<div>
+									<img alt="404" src="assets/images/403.png">
+								</div>
+	
+								<hr />
+								<div class="space"></div>
+							</div>
+						</div><!-- PAGE CONTENT ENDS -->
+					</div><!-- /.row -->
+				</div><!-- /.page-content -->
+			</div>
+		</div><!-- /.main-content -->
+		
+	</div><!-- /.main-container-inner -->
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+</body>
+</html>

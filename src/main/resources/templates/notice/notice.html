@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('消息列表')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('消息管理','消息列表')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="space-6"></div>
+							<div class="tabbable user-list">
+								<div class="col-sm-3 no-padding">
+									<div class="widget-box notice-list-left user-list-box">
+										<div class="widget-header header-color-blue" style="border-bottom: none;">
+											<h5 class="bigger lighter"><i class="fa fa-users"></i>消息类别</h5>
+										</div>
+
+										<div class="widget-main">
+											<ul class="list-unstyled spaced2 nav nav-list" id="myTab" style="max-height: 600px;overflow-y: auto;">
+
+												<li data-tab-key class="first">
+													<a href="javascript:;"><i class="fa fa-comments-o green"></i> 全部消息</a>
+												</li>
+												<li data-tab-key="sendType" data-tab-value="false">
+													<a href="javascript:;"><i class="fa fa-commenting-o orange"></i> 系统通知</a>
+												</li>
+												<li data-tab-key="sendType" data-tab-value="true">
+													<a href="javascript:;"><i class="fa fa-envelope-o blue"></i> 群发邮件</a>
+												</li>
+												<li th:if="${!#lists.isEmpty(merchants)}">
+													<a href="javascript:;" class="dropdown-toggle"><i class="fa fa-users blue"></i> 商户邮件</a>
+													<ul class="submenu" style="display: none;">
+														<li th:each="merchant:${merchants}" data-tab-key="merchantId" th:attr="data-tab-value=${merchant.id}">
+															<a href="javascript:;"> 
+																<i class="fa fa-user"></i> 
+																<span th:text="${merchant.account}"></span>
+															</a>
+														</li>
+													</ul>
+												</li>
+											</ul>
+										</div>
+
+									</div>
+								</div>
+								<div class="col-sm-9 notice-right" id="list-right">
+									<div class="side_title none">
+										<a class="close_btn"><span class="side-hide" data-rel="tooltip" data-placement="bottom" title="显示" style="left: -2px"></span></a>
+									</div>
+									<div class="side_title">
+										<a class="close_btn"><span class="side-show" data-rel="tooltip" data-placement="bottom" title="隐藏" style="left: -25px"></span></a>
+									</div>
+									<h4 class="header blue lighter">
+										<i class="fa fa-comments-o"></i>
+										消息列表
+										
+										<button th:if="${#authorization.expression('hasAuthority(''notice/add'')')}" 
+											id="modal-add" data-toggle='modal' data-target="#modal-table" 
+											class="btn btn-app btn-primary btn-xs pull-right" style="height: 28px;">
+											<i class="fa fa-plus"></i>添加消息
+										</button>
+									</h4>
+									<div class="tab-content no-border" style="padding: 12px 0px;">
+										<div class="table-responsive">
+											<table id="sample-table" class="table table-striped table-bordered table-hover">
+												<thead>
+													<tr>
+														<th class="center">
+															<label><input type="checkbox" class="ace"><span class="lbl"></span></label>
+														</th>
+														<th class="center">发送时间</th>
+														<th class="center">标题</th>
+														<th class="center">内容</th>
+														<th class="center">管理员</th>
+														<th class="center">商户</th>
+														<th class="center">状态</th>
+														<th th:if="${#authorization.expression('hasAuthority(''notice/delete'')')}" class="center">操作</th>
+													</tr>
+												</thead>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<!-- modal-table -->
+	<div th:replace="common/toolbar :: modal"></div>
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+	
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+	
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+	
+	<script type="text/javascript">
+		var options = {
+			rangePicker: false,
+			element: "#sample-table",
+			ajax: {
+				url: "notice/list"
+			},
+			order: [1, "desc"],
+			columns: [
+				{  
+					"data" : "id",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full, meta) {
+						return '<input type="checkbox" name="ids" value="'+ data +'" class="ace serialize"><span class="lbl"></span></label>';
+					}
+				},
+				{  
+					"data" : "sendDate",
+					"class" : "center hidden-680",
+					"orderSequence": ["desc","asc"],
+					"render" : function(data, type, full) {
+						var arr = data.split(" ");
+						return "<p class='tab-p-heard'>"+arr[0]+"</p><p class='tab-p-foot'>"+arr[1]+"</p>";
+					}
+				},
+				{  
+					"data" : "title",
+					"class" : "center hidden-680",
+					"orderable": false
+				},
+				{  
+					"data" : "content",
+					"class" : "center hidden-680",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return "<a href='javascript:;' data-rel='tooltip' data-placement='bottom' title='点击查看详情'>"+$.stringEllipsis(data,20,0)+"</a>";
+					}
+				},
+				{  
+					"data" : "user",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return data==null?"--":data.userName;
+					}
+				},
+				{  
+					"data" : "merchant",
+					"class" : "center",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return data==null?"--":data.account;
+					}
+				},
+				{  
+					"data" : "state",
+					"class" : "center word-break-normal",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						if (data)
+							return '<span class="green">启用</span>';
+						return '<span class="red">禁用</span>';
+					}
+				}
+            ],
+            rowCallbacks: [
+            	{render: function (row, data){
+            		$('td:eq(3)', row).find("a").off().on("click", function (){
+            			layer.open({
+	            			type: 1,
+	            			title: false,
+	            			closeBtn: false,
+	            			area: '300px;',
+	            			shade: 0.6,
+	            			id: 'paypal_notice_'+data.id,
+	            			resize: false,
+	            			btn: ['关闭'],
+	            			btnAlign: 'c',
+	            			moveType: 1,
+	            			content: '<div style="padding: 35px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">'+data.content+'</div>',
+						});
+            		});
+            	}}
+            ]
+		};
+		var delet = "",delet0 = "";
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''notice/state'')')}" class="invisible" type="text/javascript">
+		options.columns[6] = {  
+					"data" : "state",
+					"class" : "center word-break-normal",
+					"orderable": false,
+					"render" : function(data, type, full) {
+						return '<label><input type="checkbox" class="ace ace-switch ace-switch-3 on-or-off"  data-ajax-url="notice/state" value="'+ full.id +'" '+(data?"checked":"")+'><span class="lbl"></span></label>';
+					}
+				};
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''notice/delete'')')}" class="invisible" type="text/javascript">
+		delet = function (data) {
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="notice/delete" href="javascript:;"><i class="fa fa-trash-o bigger-130"></i></a>';
+		};
+		delet0 = function (data) {
+			return '<a class="red btn-delete" id="'+ data +'" data-ajax-url="notice/delete" href="javascript:;">删除</a>';
+		};
+		options.initCompletes = [{render: function (jsonData){
+	            		$("#sample-table_length").append('<button data-ajax-url="" class="btn btn-app btn-danger btn-xs btn-batch-delete" style="height: 34px;float:right;"><i class="fa fa-trash"></i>批量删除</button>');
+            	}},
+            	{render: function (jsonData){
+            		$(".btn-batch-delete").on("click", function (){
+            			var array = $("tbody input:checkbox:checked");
+						if (array.length > 0){
+							var _this = $(this)
+							layer.confirm('\u662F\u5426\u786E\u5B9A\u5220\u9664\u9009\u4E2D\u6D88\u606F\uFF1F', {
+								title: "<li class='fa fa-question-circle-o bigger-120 red'></li> \u63D0\u793A",
+								btn: ['\u786E\u5B9A', '\u53D6\u6D88'] //\u6309\u94AE
+							}, function(){
+								$.postAjax({
+									error: true,
+									success: true,
+									data: array.serialize(),
+									url: "notice/delete",
+									before: function (){
+										_this.attr("disabled", true);
+									},
+									callback: function (){
+										_this.attr("disabled", false);
+										$("#sample-table").dataTable().fnDraw(false);
+									}
+								});
+							});
+						}else{
+							layer.msg("\u8BF7\u9009\u4E2D\u8981\u5220\u9664\u7684\u6D88\u606F\uFF01");
+						}
+            		});
+            	}}
+            ]
+	</script>
+	<script type="text/javascript" class="invisible">
+		if (delet != "" && typeof delet == "function" && delet0 != "" && typeof delet0 == "function")
+			options.columns.push({  
+						"data" : "id",
+						"class" : "center",
+						"orderable": false,
+						"render" : function(data, type, full) {
+							return '<div class="visible-md visible-lg action-buttons">' + (delet==""?"":delet(data)) + '</div>' + 
+									'<div class="hidden-md hidden-lg action-buttons">' +
+										'<div class="inline position-relative">' +
+											'<i class="fa fa-cog bigger-120 blue" data-toggle="dropdown"></i>' +
+			
+											'<ul class="dropdown-menu dropdown-only-icon dropdown-light pull-right dropdown-caret dropdown-close">' +
+												'<li>' + (delet0==""?"":delet0(data)) + '</li>' +
+											'</ul>' +
+										'</div>' +
+									'</div>';
+						}
+					});
+		
+		var paypal = new PayPal(options);
+		paypal.dataTab();
+	</script>
+	<script th:if="${#authorization.expression('hasAuthority(''notice/add'')')}" class="invisible" type="text/javascript">
+		$("#modal-add").ModalBox({
+			title: "添加消息",
+			url: "notice/add",
+			_flash: true,
+			hindeData: [{sendType: false}],
+			forms: [
+				{title: "标题",name: "title",doc: "input",docType: "text"},
+				{title: "类型",name: "sendType",doc: "select",callback: function (){
+					return "<option value=''>--\u8BF7\u9009\u62E9--</option>" + 
+								"<option value='false'>系统通知</option>" + 
+								"<option value='true'>邮件推送</option>";
+				}},
+				{title: "正文",name: "content",doc: "textarea"}
+			]
+		});
+	</script>
+	<script type="text/javascript">
+		$(".close_btn").on("click", function (){
+			var _widgetBox = $(".user-list-box");
+			if (_widgetBox.is(":hidden")){
+				_widgetBox.css("display","block");
+				$("#list-right").removeClass("col-sm-12").addClass("col-sm-9");
+				$(".side-hide").parent().parent().addClass("none");
+				$(".side-show").parent().parent().removeClass("none");
+			}else{
+				_widgetBox.css("display","none");
+				$("#list-right").removeClass("col-sm-9").addClass("col-sm-12");
+				$(".side-show").parent().parent().addClass("none");
+				$(".side-hide").parent().parent().removeClass("none")
+			}
+		});
+	</script>
+	
+</body>
+</html>
