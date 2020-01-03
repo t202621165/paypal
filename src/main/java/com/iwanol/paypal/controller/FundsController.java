@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.iwanol.paypal.base.enums.ReturnMsgEnum;
+import com.iwanol.paypal.domain.CongKou;
 import com.iwanol.paypal.domain.SettleMent;
 import com.iwanol.paypal.domain.SettleMentReply;
 import com.iwanol.paypal.service.BankService;
+import com.iwanol.paypal.service.CongKouService;
 import com.iwanol.paypal.service.SettleMentReplyService;
 import com.iwanol.paypal.service.SettleMentService;
 import com.iwanol.paypal.until.PageData;
 import com.iwanol.paypal.vo.BankVo;
+import com.iwanol.paypal.vo.CongKouVo;
 import com.iwanol.paypal.vo.FundsVo;
 import com.iwanol.paypal.vo.SettleMentReplyVo;
 import com.iwanol.paypal.vo.SettleMentVo;
@@ -37,6 +40,9 @@ public class FundsController {
 	private SettleMentReplyService settleMentReplyService;
 	@Autowired
 	private BankService bankService;
+	@Autowired
+	private CongKouService congKouService;
+	
 	
 	@PostMapping("settlement")
 	@PreAuthorize("hasAuthority('funds_pay')")
@@ -56,6 +62,21 @@ public class FundsController {
 		}
 		vo.setType(0);
 		return settleMentService.findPageVo(vo, Boolean.TRUE);
+	}
+	
+	@PostMapping("congkou")
+	@PreAuthorize("hasAuthority('funds_pay')")
+	public Map<String,Object> congkouList(CongKouVo vo){
+		if (vo.getStart() == null){
+			vo.setStart(1);
+		}
+		return congKouService.findPageVo(vo, Boolean.TRUE);
+	}
+	
+	@PostMapping("congkou/save")
+	@PreAuthorize("hasAuthority('funds_pay')")
+	public JSONObject congkouSave(CongKou v){
+		return congKouService.congkou(v);
 	}
 	
 	/**

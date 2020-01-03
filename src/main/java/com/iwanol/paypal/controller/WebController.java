@@ -150,6 +150,17 @@ public class WebController {
 		return "funds/daifu";
 	}
 	
+	/**
+	 * 充扣页面
+	 * @param model
+	 * @return
+	 */
+	@PreAuthorize("hasAuthority('funds.html')")
+	@GetMapping("/cong_kou")
+	public String congkou(){
+		return "funds/cong_kou";
+	} 
+	
 	
 	/**
 	 * 批付记录列表

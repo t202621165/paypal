@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns="http://www.w3.org/1999/xhtml">
+<head th:include="common/header :: commonHeader('商户充扣')"></head>
+<body>
+	<!-- navigation -->
+	<div th:replace="common/navigation :: bar"></div>
+
+	<div class="main-container" id="main-container">
+		<!-- toolbar -->
+		<div th:replace="common/toolbar :: tool"></div>
+
+		<div class="main-container-inner">
+			<!-- sidebar -->
+			<div th:replace="common/sidebar :: menu"></div>
+
+			<div class="main-content">
+				<!-- breadcrumbs -->
+				<div th:replace="common/toolbar :: breadcrumbs('资金管理','商户充扣业务')"></div>
+
+				<div class="page-content searchForm">
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="widget-box">
+								<div class="widget-header">
+									<h4>充扣查询</h4>
+									<span class="widget-toolbar"> <a href="javascript:;">
+											<i class="fa fa-refresh"></i>
+									</a> <a href="javascript:;" data-action="collapse"> <i
+											class="fa fa-chevron-up"></i>
+									</a>
+									</span>
+								</div>
+								<div class="widget-body">
+									<div class="widget-main">
+										<form id="searchForm">
+											<div class="row">
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon"> <i
+															class="fa fa-calendar bigger-110"></i>
+														</span> <input class="form-control date-range-picker" type="text"
+															id="id-date-range-picker-1">
+													</div>
+												</div>
+												<input type="hidden" name="startDate"> <input
+													type="hidden" name="endDate">
+												
+												<div class="col-xs-4">
+													<div class="input-group">
+														<span class="input-group-addon">商户</span> <input
+															name="merId" type="text"
+															class="form-control search-query" placeholder="请输入商户ID">
+														<span class="input-group-btn">
+															<button type="button"
+																class="btn btn-primary btn-sm btn-query">查询</button>
+														</span>
+													</div>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xs-12">
+							<div class="hr hr-18 dotted hr-double"></div>
+							<div class="tabbable">
+								<ul class="nav nav-tabs tab-size-bigger" id="myTab">
+								
+									<li class="pull-right">
+										
+										
+										<button th:if="${#authorization.expression('hasAuthority(''funds_pay'')')}" 
+											id="modal-add" data-toggle="modal" data-target="#modal-table-1" class="btn btn-app btn-primary btn-xs" style="height: 34px;">
+											<i class="fa fa-cny"></i>商户充扣款
+										</button>
+										
+										
+									</li>
+									
+									<li data-tab-key="state" data-tab-value="1"
+										data-rel="tooltip" data-placement="bottom" title="充扣款成功记录">
+										<a data-toggle="tab" href="#pay_check"> <i
+											class="orange fa fa-hourglass-1 bigger-130 summary"></i> <span
+											class="bigger-110">成功</span>
+										</a>
+									</li>
+										
+									<li data-tab-key="state" data-tab-value="-1"
+										data-rel="tooltip" data-placement="bottom" title="充扣款失败记录">
+										<a data-toggle="tab" href="#pay_check"> <i
+											class="blue fa fa-hourglass-end bigger-130 summary"></i> <span
+											class="bigger-110">失败</span>
+										</a>
+									</li>
+																							
+								</ul>
+
+								<div class="tab-content no-border" style="padding: 12px 0px;">
+									<div id="pay_check" class="tab-pane in active">
+										<table id="sample-table"
+											class="table table-striped table-bordered table-hover">
+											<thead>
+												<tr>
+													<th class="center">商户ID<span class="tab-p-foot none">/商户姓名</span></th>
+													<th class="center">业务类型</th>
+													<th class="center">业务金额</th>										
+													<th class="center">开户银行</th>
+													<th class="center">开户姓名</th>
+													<th class="center">开户卡号</th>
+													<th class="center">描述</th>
+													<th class="center">完成时间</th>
+													<th class="center">状态</th>
+												</tr>
+											</thead>
+
+										</table>
+									</div>
+
+								</div>
+							</div>
+
+						</div>
+						<!-- /.col -->
+					</div>
+					<!-- /.row -->
+				</div>
+				<!-- /.page-content -->
+			</div>
+			<!-- /.main-content -->
+
+		</div>
+		<!-- /.main-container-inner -->
+	</div>
+	<!-- /.main-container -->
+	
+	<div id="modal-table-1" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h4 class="modal-title">&nbsp;商户充扣款</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form" id="modal-form-1">
+					    
+					   <div class="form-group">
+							<label for="" class="col-sm-1 control-label"></label>
+							<div class="col-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><span style="letter-spacing: 0.5em;">商户</span>ID</span>
+									<span class="block input-icon input-icon-right">
+										<input class="form-control radius-right" name="merId" type="text" placeholder="请填需要充扣款的商户ID">
+									</span>
+								</div>
+							</div>
+						</div>
+								
+						<div class="form-group">
+							<label for="" class="col-sm-1 control-label"></label>
+							<div class="col-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon">业务类型</span>
+									<span class="block input-icon input-icon-right">
+										<select name = "type" class="form-control radius-right required" data-title="业务类型">
+											<option value="0">充款</option>
+											<option value="1">扣款</option> 
+										</select>
+										<i class="fa fa-remove red i-prt"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="" class="col-sm-1 control-label"></label>
+							<div class="col-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon">业务金额</span>
+									<span class="block input-icon input-icon-right">
+										<input class="form-control radius-right" name="amount" type="number" placeholder="充扣款金额">
+									</span>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="" class="col-sm-1 control-label"></label>
+							<div class="col-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon">业务描述</span>
+									<span class="block input-icon input-icon-right">
+										<textarea rows="3" class="form-control radius-right" name="discription" cols="20" placeholder="充扣款描述"></textarea>
+									</span>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label for="" class="col-sm-1 control-label"></label>
+							<div class="col-sm-10">
+								<div class="input-group">
+									<span class="input-group-addon"><span style="letter-spacing: 0.5em;">验证</span>码</span>
+									<span class="block input-icon input-icon-right">
+										<input class="form-control radius-none required" type="text" id="sms1Code" placeholder="请输入短信验证码" data-title="验证码">
+										<i class="fa fa-remove red i-prt"></i>
+									</span>
+									<span class="input-group-addon" style="padding: 0;border-left:0;" 
+											data-rel="popover" data-trigger="hover" data-placement="bottom" 
+											data-title="时效验证" data-content="开启时效验证时，在有效期内(5分钟)，无需再次获取验证码！">
+										<input type="checkbox" checked="checked" id="is_effective" name="is_effective" class="table-checkbox check-state">
+									</span>
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-primary btn-sm" id="sms_1" data-rel="tooltip" data-placement="bottom" title="点击获取验证码">获取验证码</button>
+									</span>
+								</div>
+							</div>
+						</div>
+
+					</form>
+				</div>
+				<div class="modal-footer no-margin-top">
+					<button class="btn btn-sm btn-danger" data-dismiss="modal"><i class="fa fa-remove"></i>关闭</button>
+					<button class="btn btn-sm btn-primary" onclick="congkou();"><i class="fa fa-check"></i>确定</button>
+				</div>
+				<script class="invisible" type="text/javascript" th:inline="javascript">
+					$("#sms_1").off("click").on("click",function(){
+						$.ajax({
+							url:"/sms",
+							type:"post",
+							success:function(data){
+								if (data) {
+									$.countDown($("#sms_1"));
+									//alert(data.msg);
+									layer.msg(data.msg,{icon: 1});
+								}
+							}
+						});
+					});
+ 					function congkou(){
+						$.ajax({
+							url : "/payee/valid/code",
+							type : "post",
+							data:{"code":$("#sms1Code").val()},
+							success:function(data){
+								if (data.state){
+									var index = layer.load(0, {
+										shade : [ 0.7, '#393D49' ]
+									}, {
+										shadeClose : true
+									}); //0代表加载的风格，支持0-2
+									var data = $("#modal-form-1").serialize();
+									$.ajax({
+										url : "/funds/congkou/save",
+										type : "post",
+										data:data,
+										success:function(data){
+											layer.close(index);
+											if (data.state){
+												layer.msg(data.msg,{icon: 1});
+											}else{
+												layer.msg(data.msg,{icon: 2});
+											}
+											window.location.reload();
+										}
+									});
+								}else{
+									layer.msg(data.msg,{icon: 2});
+								}
+							}
+						});			
+					}
+				</script>
+			</div>
+		</div>
+	</div><!-- PAGE CONTENT ENDS -->
+
+
+	<!-- basic scripts -->
+	<div th:replace="common/common_js :: basic"></div>
+
+	<!-- ace scripts -->
+	<div th:replace="common/common_js :: ace"></div>
+
+	<!-- date range picker scripts -->
+	<div th:replace="common/common_js :: daterangepicker"></div>
+
+	<!-- dataTables scripts -->
+	<div th:replace="common/common_js :: dataTables"></div>
+
+	<script type="text/javascript">
+		var options = {
+			rangePicker : true,
+			element : "#sample-table",
+			ajax : {
+				url : "funds/congkou"
+			},
+			order : [ 7, "desc" ],
+			columns : [
+				{
+					"data" : "merId",
+					"class" : "center",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						var merName = full.merName == null ? "--" : full.merName;
+						return "<p class='tab-p-heard'>" + data + "</p><p class='tab-p-foot'>" + merName + "</p>";
+					}
+				},
+				
+				{
+					"data" : "type",
+					"class" : "center",
+					"orderSequence" : [ "desc", "asc" ],
+					"render" : function(data, type, full) {
+						if (data == 0) {
+							return '<span class="label label-success arrowed-in-right arrowed">充款</span>';
+						} 
+						
+						if (data == 1) {
+							return '<span class="label label-primary arrowed-in-right arrowed">扣款</span>';
+						}
+					}
+				},
+				
+				{
+					"data" : "amount",
+					"class" : "center green",
+					"orderSequence" : [ "desc", "asc" ],
+					"render" : function(data, type, full) {
+						return "<p class='tab-p-heard green'><i class='fa fa-rmb'></i> " + $.toThousands(data) + "</p>";
+					}
+				},
+				
+				{
+					"data" : "bankName",
+					"orderable" : false,
+					"class" : "center hidden-980",
+					"orderSequence" : [ "desc", "asc" ],
+					"render":function(data,type,full){
+						var value = data == null ? "--" : data;
+						return value;
+					}
+				},
+				{
+					"data" : "realName",
+					"orderable" : false,
+					"class" : "center hidden-980",
+					"orderSequence" : [ "desc", "asc" ],
+					"render":function(data,type,full){
+						var value = data == null ? "--" : data;
+						return value;
+					}
+				},
+				{
+					"data" : "bankNumber",
+					"class" : "center hidden-680",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						var value = data == null ? "--" : data;
+						return '<div class="action-buttons" style="position: relative;">' +
+							'<span>' + value + '</span>' +
+							'<a href="javascript:;" class="clipboard" data-rel="tooltip" data-placement="bottom" ' +
+							'title="点击复制"> <i class="fa fa-clipboard copy"></i></a>' +
+							'</div>';
+					}
+				},
+				
+				{
+					"data" : "discription",
+					"class" : "center hidden-680",
+					"orderable" : false
+				},
+				{
+					"data" : "date",
+					"class" : "center hidden-1080",
+					"orderable" : true,
+					"render" : function(data, type, full) {
+						if (data == undefined)
+							return "<p class='tab-p-heard'>--</p><p class='tab-p-foot'>--</p>";
+						return "<p class='tab-p-heard'>" + data + "</p>";
+					}
+				},
+				{
+					"data" : "state",
+					"class" : "center hidden-680",
+					"orderable" : false,
+					"render" : function(data, type, full) {
+						var result = "";
+						if (data == 1) {
+							return '<span class="label label-success arrowed-in-right arrowed">成功</span>';
+						} 
+						
+						if (data == -1){
+							return '<span class="label label-grey arrowed-in-right arrowed">失败</span>';
+						}
+					}
+				}
+			],
+			initCompletes : [],
+			drawCallbacks : [
+				{
+					render : function(jsonData) {
+						$.copyData();
+						if (typeof jsonData.sumData != "undefined") {
+							var sumData = jsonData.sumData;
+							var _html = '<div class="message-infobar" id="id-message-infobar">' +
+								'<b>总计：</b>' +
+								'<b class="blue">金额_：</b>' +
+								'<b class="green">' + $.toThousands(sumData[0].totalAmount) + '</b>&nbsp;' +
+								'<b class="blue">总笔数_：</b>' +
+								'<b class="green">' + sumData[0].totalCount + '</b>' +
+								'</div>';
+							$(".total-record").empty().append(_html);
+						}
+					}
+				}
+			]
+		};
+	</script>
+
+	
+	<script class="invisible" type="text/javascript">
+		var paypal = new PayPal(options);
+		paypal.dataTab();
+	</script>
+	
+</body>
+</html>
